@@ -7,6 +7,7 @@
 [![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Storybook](https://img.shields.io/badge/Storybook-📚-pink.svg)](https://zhengliu92.github.io/React-progress-uploader/)
 
 ## ✨ 特性
 
@@ -42,6 +43,8 @@ npm install axios
 ```
 
 ## 🚀 快速开始
+
+> 📚 **在线文档和演示**: [查看Storybook](https://zhengliu92.github.io/React-progress-uploader/)
 
 ### 基础用法
 
