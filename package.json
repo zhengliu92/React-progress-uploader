@@ -57,7 +57,9 @@
     "preview": "npm run build && npm pack",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "echo \"Warning: no test specified\" && exit 0",
-    "test:react19": "node scripts/test-react19-compatibility.js"
+    "test:react19": "node scripts/test-react19-compatibility.js",
+    "diagnose": "node scripts/diagnose-react19-issue.js",
+    "generate-config": "node scripts/generate-react19-config.js"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
