@@ -14,6 +14,10 @@
   ],
   "author": "zhengliu92",
   "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zhengliu92/React-progress-uploader.git"
