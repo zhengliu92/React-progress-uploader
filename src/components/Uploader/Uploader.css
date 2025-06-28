@@ -1,8 +1,96 @@
-.uploader-input {
-    border: 2px dashed #ccc;
-    padding: 16px;
-    cursor: pointer;
-    border-radius: 8px;
+.uploader-dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  &:hover {
+    border-color: #3b82f6;
+    background-color: #f0f9ff;
+
+    .uploader-icon {
+      color: #3b82f6;
+    }
+
+    .uploader-text {
+      color: #3b82f6;
+    }
   }
+ 
+  &.drag-active {
+    border-color: #10b981;
+    background-color: #ecfdf5;
+    border-style: solid;
+    transform: scale(1.02);
+
+    .uploader-icon {
+      color: #10b981;
+    }
+
+    .uploader-text {
+      color: #10b981;
+    }
+  }
+}
+
+.uploader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.uploader-icon {
+  width: 48px;
+  height: 48px;
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+.uploader-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.uploader-subtext {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.uploader-input {
+  display: none;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .uploader-dropzone {
+    padding: 24px 16px;
+    min-height: 160px;
+  }
+  
+  .uploader-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .uploader-text {
+    font-size: 16px;
+  }
+  
+  .uploader-subtext {
+    font-size: 13px;
+  }
+}
   

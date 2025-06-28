@@ -1,0 +1,594 @@
+/* 弹窗背景遮罩 */
+.dialog-uploader-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* 弹窗内容容器 */
+.dialog-uploader-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dialog-slide-in 0.3s ease-out;
+}
+
+@keyframes dialog-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 弹窗头部 */
+.dialog-uploader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.dialog-uploader-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.dialog-uploader-close {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-uploader-close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.dialog-uploader-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dialog-uploader-close:disabled:hover {
+  background-color: transparent;
+  color: #6b7280;
+}
+
+/* 弹窗主体 */
+.dialog-uploader-body {
+  flex: 1;
+  padding: 0 24px;
+  overflow-y: auto;
+}
+
+/* 错误提示 */
+.dialog-uploader-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+/* 弹窗底部 */
+.dialog-uploader-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.dialog-uploader-footer-status {
+  flex: 1;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dialog-uploader-cancelling-text {
+  color: #f59e0b;
+}
+
+.dialog-uploader-uploading-text {
+  color: #3b82f6;
+}
+
+.dialog-uploader-completed-text {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* 按钮样式 */
+.dialog-uploader-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+.dialog-uploader-button--secondary {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.dialog-uploader-button--secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.dialog-uploader-button--secondary:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.dialog-uploader-button--primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.dialog-uploader-button--primary:hover {
+  background-color: #2563eb;
+}
+
+.dialog-uploader-button--primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.dialog-uploader-button--cancel-upload {
+  background-color: #ef4444;
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.dialog-uploader-button--cancel-upload:hover {
+  background-color: #dc2626;
+  border-color: #b91c1c;
+}
+
+/* 选中的文件列表 */
+.dialog-uploader-selected-files {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.dialog-uploader-selected-files h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.dialog-uploader-selected-files ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dialog-uploader-file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.dialog-uploader-file-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.dialog-uploader-file-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.dialog-uploader-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog-uploader-file-name {
+  font-weight: 500;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dialog-uploader-file-size {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dialog-uploader-remove-file {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog-uploader-remove-file:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* 上传进度样式 */
+.dialog-uploader-progress {
+  margin-top: 20px;
+}
+
+.dialog-uploader-progress-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.dialog-uploader-progress-header-info {
+  flex: 1;
+}
+
+.dialog-uploader-progress-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.dialog-uploader-progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.dialog-uploader-progress-stats {
+  color: #6b7280;
+}
+
+.dialog-uploader-progress-percentage {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.dialog-uploader-cancel-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.dialog-uploader-cancel-all-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+/* 进度列表 */
+.dialog-uploader-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dialog-uploader-progress-item {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.dialog-uploader-progress-item--uploading {
+  border-color: #3b82f6;
+  background-color: #f0f9ff;
+}
+
+.dialog-uploader-progress-item--completed {
+  border-color: #10b981;
+  background-color: #f0fdf4;
+}
+
+.dialog-uploader-progress-item--error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.dialog-uploader-progress-item--cancelled {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+}
+
+.dialog-uploader-progress-item--pending {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.dialog-uploader-progress-main {
+  margin-bottom: 12px;
+}
+
+.dialog-uploader-progress-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dialog-uploader-progress-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-uploader-progress-name {
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog-uploader-progress-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dialog-uploader-progress-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialog-uploader-progress-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.dialog-uploader-progress-percent {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+/* 状态图标 */
+.dialog-uploader-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dialog-uploader-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 进度条 */
+.dialog-uploader-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #f3f4f6;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dialog-uploader-progress-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+  position: relative;
+}
+
+.dialog-uploader-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shine 1.5s infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 总体进度条 */
+.dialog-uploader-overall-progress {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dialog-uploader-overall-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #f3f4f6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dialog-uploader-overall-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.dialog-uploader-overall-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shine 1.5s infinite;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .dialog-uploader-backdrop {
+    padding: 16px;
+  }
+
+  .dialog-uploader-content {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+
+  .dialog-uploader-header {
+    padding: 20px 20px 0 20px;
+  }
+
+  .dialog-uploader-title {
+    font-size: 18px;
+  }
+
+  .dialog-uploader-body {
+    padding: 0 20px;
+  }
+
+  .dialog-uploader-footer {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .dialog-uploader-footer-status {
+    text-align: center;
+    order: -1;
+  }
+
+  .dialog-uploader-button {
+    justify-content: center;
+  }
+
+  .dialog-uploader-progress-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .dialog-uploader-progress-summary {
+    justify-content: space-between;
+  }
+
+  .dialog-uploader-progress-name-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .dialog-uploader-progress-actions {
+    justify-content: flex-end;
+  }
+
+  .dialog-uploader-file-item {
+    padding: 10px;
+  }
+
+  .dialog-uploader-progress-item {
+    padding: 12px;
+  }
+} 
