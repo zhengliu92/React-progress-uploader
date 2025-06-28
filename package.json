@@ -27,9 +27,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/react-uploader.es.js",
-      "require": "./dist/react-uploader.umd.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/react-uploader.umd.js"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -54,11 +54,11 @@
     "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "peerDependencies": {
-    "axios": "^1.10.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "axios": "^1.10.0",
     "@storybook/addon-docs": "^9.0.14",
     "@storybook/react-vite": "^9.0.14",
     "@storybook/storybook-deployer": "^2.8.16",
