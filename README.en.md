@@ -1,65 +1,65 @@
 # React Uploader
 
-**语言 / Language:** [🇺🇸 English](./README.en.md) | [🇨🇳 中文](./README.md)
+**Language / 语言:** [🇺🇸 English](./README.en.md) | [🇨🇳 中文](./README.md)
 
-一个功能完整、类型安全的 React 文件上传组件库，支持拖拽上传、实时进度显示、文件类型限制、取消上传等特性。
+A feature-complete, type-safe React file upload component library that supports drag-and-drop uploads, real-time progress tracking, file type restrictions, upload cancellation, and more.
 
 [![npm version](https://badge.fury.io/js/react-uploader.svg)](https://badge.fury.io/js/react-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ 特性
+## ✨ Features
 
-- 🚀 **即插即用** - 零配置开箱即用，支持多种上传方式
-- 📊 **实时进度** - 详细的上传进度和状态跟踪  
-- ❌ **智能取消** - 支持单个文件或全部文件的上传取消
-- 🎯 **多文件支持** - 批量上传，可配置并发数量
-- 🎨 **文件过滤** - 灵活的文件类型和大小限制
-- 🖱️ **拖拽体验** - 原生拖拽支持，用户体验友好
-- 🎛️ **高度可定制** - 多种样式、尺寸和行为配置
-- 📱 **响应式设计** - 完美支持移动端和桌面端
-- 🔒 **类型安全** - 完整的 TypeScript 支持
-- 🎪 **多种组件** - 按钮式、对话框式、区域式上传组件
+- 🚀 **Plug & Play** - Zero configuration, ready to use with multiple upload methods
+- 📊 **Real-time Progress** - Detailed upload progress and status tracking  
+- ❌ **Smart Cancellation** - Support for individual file or batch upload cancellation
+- 🎯 **Multi-file Support** - Batch uploads with configurable concurrency
+- 🎨 **File Filtering** - Flexible file type and size restrictions
+- 🖱️ **Drag Experience** - Native drag-and-drop support with excellent UX
+- 🎛️ **Highly Customizable** - Multiple styles, sizes, and behavior configurations
+- 📱 **Responsive Design** - Perfect support for mobile and desktop
+- 🔒 **Type Safe** - Complete TypeScript support
+- 🎪 **Multiple Components** - Button, dialog, and area upload components
 
-## 📦 安装
+## 📦 Installation
 
 ```bash
-# 使用 npm
+# Using npm
 npm install react-uploader
 
-# 使用 yarn  
+# Using yarn  
 yarn add react-uploader
 
-# 使用 pnpm
+# Using pnpm
 pnpm add react-uploader
 ```
 
-### 可选依赖
+### Optional Dependencies
 
-如果使用 axios 进行上传：
+If using axios for uploads:
 ```bash
 npm install axios
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 基础用法
+### Basic Usage
 
 ```tsx
 import React from 'react';
 import { UploadButton } from 'react-uploader';
 
-// 最简单的使用方式
+// Simplest usage
 function BasicUpload() {
   const uploadFunction = async ({ file, onProgress, signal }) => {
-    // 你的上传逻辑
+    // Your upload logic
     const formData = new FormData();
     formData.append('file', file);
     
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
-      signal, // 支持取消
+      signal, // Support cancellation
     });
     
     return {
@@ -72,16 +72,16 @@ function BasicUpload() {
     <UploadButton 
       uploadFunction={uploadFunction}
       onUpload={(files, results) => {
-        console.log('上传完成:', files);
+        console.log('Upload completed:', files);
       }}
     >
-      选择文件上传
+      Select Files to Upload
     </UploadButton>
   );
 }
 ```
 
-### 使用 axios
+### Using axios
 
 ```tsx
 import React from 'react';
@@ -97,9 +97,9 @@ function AxiosUpload() {
       const response = await axios.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          // 'Authorization': `Bearer ${token}`, // 添加认证
+          // 'Authorization': `Bearer ${token}`, // Add authentication
         },
-        signal, // 支持取消上传
+        signal, // Support upload cancellation
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
@@ -116,12 +116,12 @@ function AxiosUpload() {
       };
     } catch (error) {
       if (axios.isCancel(error)) {
-        throw error; // 重新抛出取消错误
+        throw error; // Re-throw cancellation error
       }
       
       return {
         success: false,
-        error: error.response?.data?.message || error.message || '上传失败',
+        error: error.response?.data?.message || error.message || 'Upload failed',
       };
     }
   };
@@ -132,24 +132,24 @@ function AxiosUpload() {
       multiple={true}
       acceptedFileTypes={['.jpg', '.png', '.pdf']}
       onUpload={(successfulFiles, results) => {
-        console.log(`成功上传 ${successfulFiles.length} 个文件`);
+        console.log(`Successfully uploaded ${successfulFiles.length} files`);
       }}
       onUploadProgress={(progress) => {
         const completed = progress.filter(p => p.status === 'completed').length;
-        console.log(`已完成: ${completed}/${progress.length}`);
+        console.log(`Completed: ${completed}/${progress.length}`);
       }}
     >
-      上传文件
+      Upload Files
     </UploadButton>
   );
 }
 ```
 
-## 📚 组件API
+## 📚 Component API
 
 ### UploadButton
 
-快速集成的按钮式上传组件。
+Quick integration button-style upload component.
 
 ```tsx
 import { UploadButton } from 'react-uploader';
@@ -157,24 +157,24 @@ import { UploadButton } from 'react-uploader';
 
 #### Props
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `uploadFunction` | `UploadFunction` | **必需** | 上传函数实现 |
-| `children` | `ReactNode` | `"上传文件"` | 按钮内容 |
-| `variant` | `"primary" \| "secondary" \| "outline"` | `"primary"` | 按钮样式 |
-| `size` | `"small" \| "medium" \| "large"` | `"medium"` | 按钮尺寸 |
-| `multiple` | `boolean` | `true` | 是否支持多文件 |
-| `acceptedFileTypes` | `string[]` | `undefined` | 允许的文件类型 |
-| `maxConcurrent` | `number` | `3` | 最大并发上传数 |
-| `maxFiles` | `number` | `10` | 最大文件数量 |
-| `maxFileSize` | `number` | `undefined` | 单文件最大大小(字节) |
-| `disabled` | `boolean` | `false` | 是否禁用 |
-| `onUpload` | `UploadCallback` | `undefined` | 上传完成回调 |
-| `onUploadProgress` | `ProgressCallback` | `undefined` | 进度更新回调 |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `uploadFunction` | `UploadFunction` | **Required** | Upload function implementation |
+| `children` | `ReactNode` | `"Upload Files"` | Button content |
+| `variant` | `"primary" \| "secondary" \| "outline"` | `"primary"` | Button style |
+| `size` | `"small" \| "medium" \| "large"` | `"medium"` | Button size |
+| `multiple` | `boolean` | `true` | Support multiple files |
+| `acceptedFileTypes` | `string[]` | `undefined` | Allowed file types |
+| `maxConcurrent` | `number` | `3` | Max concurrent uploads |
+| `maxFiles` | `number` | `10` | Maximum number of files |
+| `maxFileSize` | `number` | `undefined` | Max file size per file (bytes) |
+| `disabled` | `boolean` | `false` | Whether disabled |
+| `onUpload` | `UploadCallback` | `undefined` | Upload completion callback |
+| `onUploadProgress` | `ProgressCallback` | `undefined` | Progress update callback |
 
 ### DialogUploader
 
-对话框式上传组件，提供完整的上传界面。
+Dialog-style upload component providing complete upload interface.
 
 ```tsx
 import { DialogUploader } from 'react-uploader';
@@ -182,22 +182,22 @@ import { DialogUploader } from 'react-uploader';
 
 #### Props
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `isOpen` | `boolean` | **必需** | 是否显示对话框 |
-| `onClose` | `() => void` | **必需** | 关闭对话框回调 |
-| `uploadFunction` | `UploadFunction` | **必需** | 上传函数实现 |
-| `onUpload` | `UploadCallback` | `undefined` | 上传完成回调 |
-| `onUploadProgress` | `ProgressCallback` | `undefined` | 进度更新回调 |
-| `multiple` | `boolean` | `true` | 是否支持多文件 |
-| `acceptedFileTypes` | `string[]` | `undefined` | 允许的文件类型 |
-| `maxConcurrent` | `number` | `3` | 最大并发上传数 |
-| `maxFiles` | `number` | `10` | 最大文件数量 |
-| `maxFileSize` | `number` | `undefined` | 单文件最大大小(字节) |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `isOpen` | `boolean` | **Required** | Whether to show dialog |
+| `onClose` | `() => void` | **Required** | Close dialog callback |
+| `uploadFunction` | `UploadFunction` | **Required** | Upload function implementation |
+| `onUpload` | `UploadCallback` | `undefined` | Upload completion callback |
+| `onUploadProgress` | `ProgressCallback` | `undefined` | Progress update callback |
+| `multiple` | `boolean` | `true` | Support multiple files |
+| `acceptedFileTypes` | `string[]` | `undefined` | Allowed file types |
+| `maxConcurrent` | `number` | `3` | Max concurrent uploads |
+| `maxFiles` | `number` | `10` | Maximum number of files |
+| `maxFileSize` | `number` | `undefined` | Max file size per file (bytes) |
 
 ### Uploader
 
-基础的拖拽上传区域组件。
+Basic drag-and-drop upload area component.
 
 ```tsx
 import { Uploader } from 'react-uploader';
@@ -205,17 +205,17 @@ import { Uploader } from 'react-uploader';
 
 #### Props
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `onFileSelect` | `(files: FileList) => void` | **必需** | 文件选择回调 |
-| `multiple` | `boolean` | `true` | 是否支持多文件 |
-| `acceptedFileTypes` | `string[]` | `undefined` | 允许的文件类型 |
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `onFileSelect` | `(files: FileList) => void` | **Required** | File selection callback |
+| `multiple` | `boolean` | `true` | Support multiple files |
+| `acceptedFileTypes` | `string[]` | `undefined` | Allowed file types |
 
 ## 🔧 Hooks API
 
 ### useUploadQueue
 
-文件上传队列管理 hook。
+File upload queue management hook.
 
 ```tsx
 import { useUploadQueue } from 'react-uploader';
@@ -231,13 +231,13 @@ const {
   uploadFunction,
   maxConcurrent: 3,
   onUploadProgress: (progress) => console.log(progress),
-  onUploadComplete: (files, results) => console.log('完成:', files),
+  onUploadComplete: (files, results) => console.log('Completed:', files),
 });
 ```
 
 ### useFileSelection
 
-文件选择和验证 hook。
+File selection and validation hook.
 
 ```tsx
 import { useFileSelection } from 'react-uploader';
@@ -260,7 +260,7 @@ const {
 
 ### useUploadUI
 
-UI 工具函数 hook。
+UI utility functions hook.
 
 ```tsx
 import { useUploadUI } from 'react-uploader';
@@ -275,27 +275,27 @@ const {
 } = useUploadUI();
 ```
 
-## 📝 类型定义
+## 📝 Type Definitions
 
 ```typescript
-// 上传函数签名
+// Upload function signature
 type UploadFunction = (options: UploadOptions) => Promise<UploadResult>;
 
-// 上传选项
+// Upload options
 interface UploadOptions {
   file: File;
   onProgress: (progress: number) => void;
   signal: AbortSignal;
 }
 
-// 上传结果
+// Upload result
 interface UploadResult {
   success: boolean;
   data?: any;
   error?: string;
 }
 
-// 上传进度
+// Upload progress
 interface UploadProgress {
   fileName: string;
   progress: number;
@@ -303,19 +303,19 @@ interface UploadProgress {
   error?: string;
 }
 
-// 回调函数
+// Callback functions
 type UploadCallback = (successfulFiles: File[], results: UploadResult[]) => void;
 type ProgressCallback = (progress: UploadProgress[]) => void;
 ```
 
-## 🎯 使用场景
+## 🎯 Use Cases
 
-### 图片上传
+### Image Upload
 
 ```tsx
 function ImageUpload() {
   const imageUpload = async ({ file, onProgress, signal }) => {
-    // 客户端图片压缩
+    // Client-side image compression
     const compressedFile = await compressImage(file);
     
     const formData = new FormData();
@@ -340,13 +340,13 @@ function ImageUpload() {
       maxFileSize={5 * 1024 * 1024} // 5MB
       variant="primary"
     >
-      上传图片
+      Upload Images
     </UploadButton>
   );
 }
 ```
 
-### 文档上传
+### Document Upload
 
 ```tsx
 function DocumentUpload() {
@@ -359,17 +359,17 @@ function DocumentUpload() {
       maxFiles={3}
       multiple={true}
       onUpload={(files, results) => {
-        console.log(`上传了 ${files.length} 个文档`);
+        console.log(`Uploaded ${files.length} documents`);
       }}
     />
   );
 }
 ```
 
-### 云存储上传
+### Cloud Storage Upload
 
 ```tsx
-// 使用阿里云 OSS
+// Using Alibaba Cloud OSS
 const ossUpload = async ({ file, onProgress, signal }) => {
   try {
     const result = await ossClient.put(file.name, file, {
@@ -383,12 +383,12 @@ const ossUpload = async ({ file, onProgress, signal }) => {
   } catch (error) {
     return {
       success: false,
-      error: error.message || '上传到云存储失败',
+      error: error.message || 'Failed to upload to cloud storage',
     };
   }
 };
 
-// 使用 AWS S3
+// Using AWS S3
 const s3Upload = async ({ file, onProgress, signal }) => {
   try {
     const { data } = await axios.post('/api/s3/presigned-url', {
@@ -416,15 +416,15 @@ const s3Upload = async ({ file, onProgress, signal }) => {
     }
     return {
       success: false,
-      error: error.message || 'S3上传失败',
+      error: error.message || 'S3 upload failed',
     };
   }
 };
 ```
 
-## 🎨 样式自定义
+## 🎨 Style Customization
 
-### CSS 变量
+### CSS Variables
 
 ```css
 :root {
@@ -436,10 +436,10 @@ const s3Upload = async ({ file, onProgress, signal }) => {
 }
 ```
 
-### 自定义样式
+### Custom Styles
 
 ```css
-/* 自定义按钮样式 */
+/* Custom button styles */
 .upload-button--primary {
   background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
   border: none;
@@ -452,14 +452,14 @@ const s3Upload = async ({ file, onProgress, signal }) => {
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
 }
 
-/* 自定义对话框样式 */
+/* Custom dialog styles */
 .dialog-uploader-content {
   border-radius: 16px;
   backdrop-filter: blur(10px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-/* 自定义进度条 */
+/* Custom progress bar */
 .dialog-uploader-progress-fill {
   background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
   position: relative;
@@ -482,31 +482,31 @@ const s3Upload = async ({ file, onProgress, signal }) => {
 }
 ```
 
-## 🚀 性能优化
+## 🚀 Performance Optimization
 
-### 大文件处理
+### Large File Handling
 
 ```tsx
 const optimizedUpload = async ({ file, onProgress, signal }) => {
-  // 文件大小检查
+  // File size check
   const maxSize = 100 * 1024 * 1024; // 100MB
   if (file.size > maxSize) {
     return {
       success: false,
-      error: `文件大小超过限制 (${Math.round(maxSize / 1024 / 1024)}MB)`,
+      error: `File size exceeds limit (${Math.round(maxSize / 1024 / 1024)}MB)`,
     };
   }
 
-  // 大文件分片上传
-  if (file.size > 10 * 1024 * 1024) { // 10MB以上使用分片
+  // Use chunked upload for large files
+  if (file.size > 10 * 1024 * 1024) { // 10MB+ use chunks
     return await chunkUpload(file, onProgress, signal);
   }
 
-  // 普通上传
+  // Regular upload
   return await regularUpload(file, onProgress, signal);
 };
 
-// 分片上传实现
+// Chunked upload implementation
 async function chunkUpload(file, onProgress, signal) {
   const chunkSize = 5 * 1024 * 1024; // 5MB per chunk
   const chunks = Math.ceil(file.size / chunkSize);
@@ -526,47 +526,47 @@ async function chunkUpload(file, onProgress, signal) {
 }
 ```
 
-### 并发控制
+### Concurrency Control
 
 ```tsx
 function BatchUpload() {
   return (
     <UploadButton
       uploadFunction={uploadFunction}
-      maxConcurrent={2} // 限制并发数，避免服务器压力
+      maxConcurrent={2} // Limit concurrency to avoid server pressure
       multiple={true}
       onUploadProgress={(progress) => {
-        // 监控上传队列状态
+        // Monitor upload queue status
         const stats = {
           uploading: progress.filter(p => p.status === 'uploading').length,
           completed: progress.filter(p => p.status === 'completed').length,
           failed: progress.filter(p => p.status === 'error').length,
         };
-        console.log('上传统计:', stats);
+        console.log('Upload stats:', stats);
       }}
     >
-      批量上传
+      Batch Upload
     </UploadButton>
   );
 }
 ```
 
-## 🔧 最佳实践
+## 🔧 Best Practices
 
-### 1. 错误处理
+### 1. Error Handling
 
 ```tsx
 const robustUpload = async ({ file, onProgress, signal }) => {
   try {
-    // 预检查
+    // Pre-checks
     if (file.size > 50 * 1024 * 1024) {
-      return { success: false, error: '文件大小不能超过50MB' };
+      return { success: false, error: 'File size cannot exceed 50MB' };
     }
 
-    // 文件类型验证
+    // File type validation
     const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
     if (!allowedTypes.includes(file.type)) {
-      return { success: false, error: '不支持的文件类型' };
+      return { success: false, error: 'Unsupported file type' };
     }
 
     const formData = new FormData();
@@ -575,7 +575,7 @@ const robustUpload = async ({ file, onProgress, signal }) => {
     const response = await axios.post('/api/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       signal,
-      timeout: 60000, // 60秒超时
+      timeout: 60000, // 60 second timeout
       onUploadProgress: (progressEvent) => {
         if (progressEvent.total) {
           onProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total));
@@ -586,31 +586,31 @@ const robustUpload = async ({ file, onProgress, signal }) => {
     return { success: true, data: response.data };
   } catch (error) {
     if (axios.isCancel(error)) {
-      throw error; // 保留取消错误
+      throw error; // Preserve cancellation error
     }
     
-    // 友好的错误信息
+    // Friendly error messages
     if (error.code === 'ECONNABORTED') {
-      return { success: false, error: '上传超时，请检查网络连接' };
+      return { success: false, error: 'Upload timeout, please check network connection' };
     }
     
     if (error.response?.status === 413) {
-      return { success: false, error: '文件太大，服务器拒绝处理' };
+      return { success: false, error: 'File too large, server rejected the request' };
     }
     
     if (error.response?.status >= 500) {
-      return { success: false, error: '服务器错误，请稍后重试' };
+      return { success: false, error: 'Server error, please try again later' };
     }
     
     return { 
       success: false, 
-      error: error.response?.data?.message || '上传失败，请重试' 
+      error: error.response?.data?.message || 'Upload failed, please try again' 
     };
   }
 };
 ```
 
-### 2. 进度监控
+### 2. Progress Monitoring
 
 ```tsx
 function AdvancedProgressTracking() {
@@ -629,7 +629,7 @@ function AdvancedProgressTracking() {
     const completedFiles = progress.filter(p => p.status === 'completed').length;
     const failedFiles = progress.filter(p => p.status === 'error').length;
     
-    // 计算总体进度
+    // Calculate overall progress
     const totalProgress = progress.reduce((sum, p) => sum + p.progress, 0);
     const avgProgress = totalFiles > 0 ? totalProgress / totalFiles : 0;
     
@@ -649,14 +649,14 @@ function AdvancedProgressTracking() {
         onUploadProgress={handleProgress}
         multiple={true}
       >
-        上传文件
+        Upload Files
       </UploadButton>
       
       <div className="upload-stats">
-        <p>总进度: {uploadStats.progress.toFixed(1)}%</p>
-        <p>文件: {uploadStats.completedFiles}/{uploadStats.totalFiles}</p>
+        <p>Overall Progress: {uploadStats.progress.toFixed(1)}%</p>
+        <p>Files: {uploadStats.completedFiles}/{uploadStats.totalFiles}</p>
         {uploadStats.failedFiles > 0 && (
-          <p style={{ color: 'red' }}>失败: {uploadStats.failedFiles}</p>
+          <p style={{ color: 'red' }}>Failed: {uploadStats.failedFiles}</p>
         )}
       </div>
     </div>
@@ -664,7 +664,7 @@ function AdvancedProgressTracking() {
 }
 ```
 
-### 3. 国际化支持
+### 3. Internationalization Support
 
 ```tsx
 const messages = {
@@ -688,7 +688,7 @@ const messages = {
   },
 };
 
-function I18nUpload({ locale = 'zh-CN' }) {
+function I18nUpload({ locale = 'en-US' }) {
   const t = messages[locale];
   
   return (
@@ -699,123 +699,123 @@ function I18nUpload({ locale = 'zh-CN' }) {
 }
 ```
 
-## 🐛 故障排除
+## 🐛 Troubleshooting
 
-### 常见问题
+### Common Issues
 
-**Q: 上传进度条不显示？**
-A: 确保你的上传函数正确调用了 `onProgress` 回调：
+**Q: Upload progress bar not showing?**
+A: Make sure your upload function correctly calls the `onProgress` callback:
 ```tsx
 onUploadProgress: (progressEvent) => {
   if (progressEvent.total) {
     const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-    onProgress(percent); // 这里是关键
+    onProgress(percent); // This is the key
   }
 }
 ```
 
-**Q: 取消上传不生效？**
-A: 确保在上传函数中正确处理 `signal`：
+**Q: Upload cancellation not working?**
+A: Ensure you handle the `signal` correctly in your upload function:
 ```tsx
 const response = await axios.post('/api/upload', formData, {
-  signal, // 传递 AbortSignal
+  signal, // Pass AbortSignal
   // ...
 });
 ```
 
-**Q: 文件类型限制不生效？**
-A: 检查文件类型格式，应该包含点号：
+**Q: File type restrictions not working?**
+A: Check file type format, should include the dot:
 ```tsx
-acceptedFileTypes={['.jpg', '.png']} // ✅ 正确
-acceptedFileTypes={['jpg', 'png']}   // ❌ 错误
+acceptedFileTypes={['.jpg', '.png']} // ✅ Correct
+acceptedFileTypes={['jpg', 'png']}   // ❌ Wrong
 ```
 
-**Q: 样式不生效？**
-A: 确保导入了CSS文件：
+**Q: Styles not working?**
+A: Make sure to import the CSS file:
 ```tsx
 import 'react-uploader/dist/style.css';
 ```
 
-**Q: TypeScript 类型错误？**
-A: 确保安装了类型定义：
+**Q: TypeScript type errors?**
+A: Make sure you have the type definitions installed:
 ```bash
 npm install @types/react @types/react-dom
 ```
 
-### 调试技巧
+### Debugging Tips
 
 ```tsx
-// 开启调试模式
+// Enable debug mode
 const debugUpload = async ({ file, onProgress, signal }) => {
-  console.log('开始上传:', file.name, file.size);
+  console.log('Starting upload:', file.name, file.size);
   
   try {
     const result = await yourUploadFunction({ file, onProgress, signal });
-    console.log('上传结果:', result);
+    console.log('Upload result:', result);
     return result;
   } catch (error) {
-    console.error('上传错误:', error);
+    console.error('Upload error:', error);
     throw error;
   }
 };
 ```
 
-## 📱 浏览器兼容性
+## 📱 Browser Compatibility
 
-| 浏览器 | 最低版本 | 说明 |
-|--------|----------|------|
-| Chrome | 61+ | 完全支持 |
-| Firefox | 60+ | 完全支持 |
-| Safari | 12+ | 完全支持 |
-| Edge | 79+ | 完全支持 |
-| IE | 不支持 | 需要 polyfill |
+| Browser | Minimum Version | Notes |
+|---------|----------------|-------|
+| Chrome | 61+ | Full support |
+| Firefox | 60+ | Full support |
+| Safari | 12+ | Full support |
+| Edge | 79+ | Full support |
+| IE | Not supported | Requires polyfills |
 
 ### Polyfills
 
-如需支持更低版本浏览器，请添加以下 polyfills：
+To support older browsers, add these polyfills:
 
 ```bash
 npm install core-js whatwg-fetch abortcontroller-polyfill
 ```
 
 ```js
-// 在应用入口添加
+// Add to your app entry point
 import 'core-js/stable';
 import 'whatwg-fetch';
 import 'abortcontroller-polyfill/dist/abortcontroller-polyfill-only';
 ```
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎贡献代码！请阅读[贡献指南](CONTRIBUTING.md)了解详情。
+Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md) for details.
 
-### 开发环境
+### Development Environment
 
 ```bash
-# 克隆仓库
+# Clone the repository
 git clone https://github.com/zhengliu92/React-progress-uploader.git
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 启动开发服务器
+# Start development server
 npm run dev
 
-# 运行 Storybook
+# Run Storybook
 npm run storybook
 
-# 构建产品版本
+# Build for production
 npm run build
 ```
 
-## 📄 许可证
+## 📄 License
 
 [MIT License](LICENSE) © 2024
 
 ---
 
-## 🙏 致谢
+## 🙏 Acknowledgments
 
-感谢所有贡献者和使用者的支持！
+Thanks to all contributors and users for their support!
 
-如果这个项目对你有帮助，请给个 ⭐️
+If this project helped you, please give it a ⭐️ 
