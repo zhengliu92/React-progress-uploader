@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "skipLibCheck": true,
+    "esModuleInterop": false,
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist",
+    "strict": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/*.stories.ts", "**/*.stories.tsx", ".storybook"]
+}
