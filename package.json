@@ -51,6 +51,7 @@
     "build:lib": "npm run clean && npm run build",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build:lib",
+    "publish": "npm run build:lib&& npm version patch && npm publish",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "deploy-storybook": "storybook-to-ghpages",
