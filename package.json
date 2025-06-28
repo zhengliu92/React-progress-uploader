@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/zhengliu92/React-progress-uploader/issues"
   },
-  "homepage": "https://github.com/zhengliu92/React-progress-uploader#readme",
+  "homepage": "https://zhengliu92.github.io/React-progress-uploader/",
   "main": "./dist/react-uploader.umd.js",
   "module": "./dist/react-uploader.es.js",
   "types": "./dist/index.d.ts",
