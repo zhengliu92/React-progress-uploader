@@ -41,19 +41,3 @@ export const FullDemo: Story = {
   },
   render: () => <Demo />,
 };
-
-export const ComponentShowcase: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "展示所有上传组件功能的综合示例页面。包含真实上传测试、模拟上传、不同配置选项等。",
-      },
-    },
-  },
-  render: () => (
-    <div style={{ padding: "20px" }}>
-      <Demo />
-    </div>
-  ),
-};

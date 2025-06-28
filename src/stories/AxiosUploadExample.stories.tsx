@@ -64,19 +64,3 @@ export const FullExample: Story = {
   },
   render: () => <AxiosUploadExample />,
 };
-
-export const ProductionReady: Story = {
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "生产环境就绪的上传示例，包含完整的错误处理、进度跟踪和用户反馈。",
-      },
-    },
-  },
-  render: () => (
-    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc" }}>
-      <AxiosUploadExample />
-    </div>
-  ),
-};
