@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { UploadButton } from "./UploadButton";
 import type { Meta, StoryObj } from "@storybook/react";
 
@@ -344,6 +344,7 @@ export const WithProgress: Story = {
   render: () => {
     const [uploadHistory, setUploadHistory] = useState<string[]>([]);
     const [progressLogs, setProgressLogs] = useState<string[]>([]);
+    const lastLogKey = useRef<string>("");
 
     const handleUpload = (files: File[], results: UploadResult[]) => {
       const fileNames = files.map((f) => f.name);
@@ -359,20 +360,29 @@ export const WithProgress: Story = {
       const completed = progress.filter((p) => p.status === "completed").length;
       const cancelled = progress.filter((p) => p.status === "cancelled").length;
       const errors = progress.filter((p) => p.status === "error").length;
+      const uploading = progress.filter((p) => p.status === "uploading").length;
 
-      setProgressLogs((prev) => [
-        ...prev,
-        `[${new Date().toLocaleTimeString()}] 进度: ${completed}/${
-          progress.length
-        } 完成${cancelled > 0 ? `, ${cancelled} 取消` : ""}${
-          errors > 0 ? `, ${errors} 失败` : ""
-        }`,
-      ]);
+      // 只在重要状态变化时记录日志，避免过多的进度更新日志
+      const currentKey = `${completed}-${cancelled}-${errors}-${uploading}`;
+
+      if (lastLogKey.current !== currentKey) {
+        lastLogKey.current = currentKey;
+
+        setProgressLogs((prev) => [
+          ...prev,
+          `[${new Date().toLocaleTimeString()}] 进度: ${completed}/${
+            progress.length
+          } 完成${uploading > 0 ? `, ${uploading} 上传中` : ""}${
+            cancelled > 0 ? `, ${cancelled} 取消` : ""
+          }${errors > 0 ? `, ${errors} 失败` : ""}`,
+        ]);
+      }
     };
 
     const clearHistory = () => {
       setUploadHistory([]);
       setProgressLogs([]);
+      lastLogKey.current = "";
     };
 
     return (

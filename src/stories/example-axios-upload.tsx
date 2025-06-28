@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { UploadButton } from "./src/components/UploadButton/UploadButton";
-import { DialogUploader } from "./src/components/DialogUploader/DialogUploader";
+import React, { useState, useRef } from "react";
+import { UploadButton } from "../components/UploadButton/UploadButton";
+import { DialogUploader } from "../components/DialogUploader/DialogUploader";
 import axios from "axios";
 
 interface UploadOptions {
@@ -221,6 +221,7 @@ export default function AxiosUploadExample() {
   const [uploadHistory, setUploadHistory] = useState<string[]>([]);
   const [progressLogs, setProgressLogs] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const lastLogKey = useRef<string>("");
 
   const handleUpload = (successfulFiles: File[], results: UploadResult[]) => {
     const fileNames = successfulFiles.map((f) => f.name);
@@ -247,13 +248,22 @@ export default function AxiosUploadExample() {
     const completed = progress.filter((p) => p.status === "completed").length;
     const cancelled = progress.filter((p) => p.status === "cancelled").length;
     const errors = progress.filter((p) => p.status === "error").length;
-    const timestamp = new Date().toLocaleTimeString();
+    const uploading = progress.filter((p) => p.status === "uploading").length;
 
-    let logMessage = `[${timestamp}] 进度: ${completed}/${progress.length} 完成`;
-    if (cancelled > 0) logMessage += `, ${cancelled} 取消`;
-    if (errors > 0) logMessage += `, ${errors} 失败`;
+    // 只在重要状态变化时记录日志，避免过多的进度更新日志
+    const currentKey = `${completed}-${cancelled}-${errors}-${uploading}`;
 
-    setProgressLogs((prev) => [...prev, logMessage]);
+    if (lastLogKey.current !== currentKey) {
+      lastLogKey.current = currentKey;
+
+      const timestamp = new Date().toLocaleTimeString();
+      let logMessage = `[${timestamp}] 进度: ${completed}/${progress.length} 完成`;
+      if (uploading > 0) logMessage += `, ${uploading} 上传中`;
+      if (cancelled > 0) logMessage += `, ${cancelled} 取消`;
+      if (errors > 0) logMessage += `, ${errors} 失败`;
+
+      setProgressLogs((prev) => [...prev, logMessage]);
+    }
   };
 
   const clearLogs = () => {

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { UploadButton } from "./UploadButton/UploadButton";
-import { Uploader } from "./Uploader/Uploader";
+import React, { useState, useRef } from "react";
+import { UploadButton } from "../components/UploadButton/UploadButton";
+import { Uploader } from "../components/Uploader/Uploader";
 import { UploadProgress, UploadResult, UploadOptions } from "../hooks";
 import axios from "axios";
 
 export const Demo: React.FC = () => {
   const [uploadHistory, setUploadHistory] = useState<string[]>([]);
   const [progressLogs, setProgressLogs] = useState<string[]>([]);
+  const lastLogKey = useRef<string>("");
 
   // 真实的axios上传函数示例
   const axiosUploadFunction = async ({
@@ -142,16 +143,29 @@ export const Demo: React.FC = () => {
     ).length;
     const errorFiles = progress.filter((p) => p.status === "error").length;
     const totalFiles = progress.length;
+    const uploadingFiles = progress.filter(
+      (p) => p.status === "uploading"
+    ).length;
 
-    let logMessage = `[${new Date().toLocaleTimeString()}] 进度更新: ${completedFiles}/${totalFiles} 文件完成`;
-    if (cancelledFiles > 0) {
-      logMessage += `, ${cancelledFiles} 个文件已取消`;
-    }
-    if (errorFiles > 0) {
-      logMessage += `, ${errorFiles} 个文件失败`;
-    }
+    // 只在重要状态变化时记录日志，避免过多的进度更新日志
+    const currentKey = `${completedFiles}-${cancelledFiles}-${errorFiles}-${uploadingFiles}`;
 
-    setProgressLogs((prev) => [...prev, logMessage]);
+    if (lastLogKey.current !== currentKey) {
+      lastLogKey.current = currentKey;
+
+      let logMessage = `[${new Date().toLocaleTimeString()}] 进度更新: ${completedFiles}/${totalFiles} 文件完成`;
+      if (uploadingFiles > 0) {
+        logMessage += `, ${uploadingFiles} 个文件上传中`;
+      }
+      if (cancelledFiles > 0) {
+        logMessage += `, ${cancelledFiles} 个文件已取消`;
+      }
+      if (errorFiles > 0) {
+        logMessage += `, ${errorFiles} 个文件失败`;
+      }
+
+      setProgressLogs((prev) => [...prev, logMessage]);
+    }
   };
 
   const handleFileSelect = (files: FileList) => {
