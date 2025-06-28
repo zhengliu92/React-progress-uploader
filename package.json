@@ -41,7 +41,8 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && npm run build:types",
+    "build:types": "tsc -p tsconfig.build.json",
     "build:lib": "npm run clean && npm run build",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build:lib",
