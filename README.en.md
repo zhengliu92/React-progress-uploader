@@ -4,6 +4,12 @@
 
 A feature-complete, type-safe React file upload component library that supports drag-and-drop uploads, real-time progress tracking, file type restrictions, upload cancellation, and more.
 
+## 🌐 Live Demo
+
+**📚 [View Live Demo & Documentation](https://zhengliu92.github.io/React-progress-uploader/)**
+
+The live demo includes interactive examples of all components, complete API documentation, and usage guides.
+
 [![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

@@ -4,6 +4,12 @@
 
 一个功能完整、类型安全的 React 文件上传组件库，支持拖拽上传、实时进度显示、文件类型限制、取消上传等特性。
 
+## 🌐 在线演示
+
+**📚 [查看实时演示和文档](https://zhengliu92.github.io/React-progress-uploader/)**
+
+在线演示包含了所有组件的交互式示例、完整的API文档和使用指南。
+
 [![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

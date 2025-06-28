@@ -223,7 +223,7 @@ export default function AxiosUploadExample() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const lastLogKey = useRef<string>("");
 
-  const handleUpload = (successfulFiles: File[], results: UploadResult[]) => {
+  const handleUpload = (successfulFiles: File[], results?: UploadResult[]) => {
     const fileNames = successfulFiles.map((f) => f.name);
     const timestamp = new Date().toLocaleTimeString();
 
@@ -231,11 +231,11 @@ export default function AxiosUploadExample() {
       ...prev,
       `[${timestamp}] 上传完成: ${fileNames.join(", ")} (${
         successfulFiles.length
-      }/${results.length} 成功)`,
+      }/${results?.length || successfulFiles.length} 成功)`,
     ]);
 
     // 可以在这里处理上传结果
-    results.forEach((result, index) => {
+    results?.forEach((result, index) => {
       if (result.success) {
         console.log(`文件上传成功:`, result.data);
       } else {

@@ -161,12 +161,14 @@ const DialogWrapper = ({ children, ...args }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
-  const handleUpload = (files: File[], results: UploadResult[]) => {
+  const handleUpload = (files: File[], results?: UploadResult[]) => {
     const timestamp = new Date().toLocaleTimeString();
     const fileNames = files.map((f) => f.name).join(", ");
     setLogs((prev) => [
       ...prev,
-      `[${timestamp}] 上传完成: ${fileNames} (${files.length}/${results.length} 成功)`,
+      `[${timestamp}] 上传完成: ${fileNames} (${files.length}/${
+        results?.length || files.length
+      } 成功)`,
     ]);
   };
 

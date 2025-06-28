@@ -121,7 +121,7 @@ export const Demo: React.FC = () => {
     });
   };
 
-  const handleUpload = (successfulFiles: File[], results: UploadResult[]) => {
+  const handleUpload = (successfulFiles: File[], results?: UploadResult[]) => {
     const fileNames = successfulFiles.map((file) => file.name);
     console.log("上传成功的文件:", successfulFiles);
     console.log("上传结果:", results);
@@ -130,7 +130,9 @@ export const Demo: React.FC = () => {
       ...prev,
       `[${new Date().toLocaleTimeString()}] 上传完成: ${fileNames.join(
         ", "
-      )} (${successfulFiles.length}/${results.length} 成功)`,
+      )} (${successfulFiles.length}/${
+        results?.length || successfulFiles.length
+      } 成功)`,
     ]);
   };
 

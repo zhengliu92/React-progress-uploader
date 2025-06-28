@@ -165,7 +165,7 @@ export const SingleFile: Story = {
     children: "选择单个文件",
     multiple: false,
     uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results: UploadResult[]) => {
+    onUpload: (files: File[], results?: UploadResult[]) => {
       console.log("上传成功的文件:", files);
       console.log("上传结果:", results);
     },
@@ -186,7 +186,7 @@ export const ImageUpload: Story = {
     multiple: true,
     variant: "primary",
     uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results: UploadResult[]) => {
+    onUpload: (files: File[], results?: UploadResult[]) => {
       console.log("上传成功的图片:", files);
       console.log("上传结果:", results);
     },
@@ -207,7 +207,7 @@ export const DocumentUpload: Story = {
     multiple: true,
     variant: "secondary",
     uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results: UploadResult[]) => {
+    onUpload: (files: File[], results?: UploadResult[]) => {
       console.log("上传成功的文档:", files);
       console.log("上传结果:", results);
     },
@@ -346,13 +346,13 @@ export const WithProgress: Story = {
     const [progressLogs, setProgressLogs] = useState<string[]>([]);
     const lastLogKey = useRef<string>("");
 
-    const handleUpload = (files: File[], results: UploadResult[]) => {
+    const handleUpload = (files: File[], results?: UploadResult[]) => {
       const fileNames = files.map((f) => f.name);
       setUploadHistory((prev) => [
         ...prev,
         `[${new Date().toLocaleTimeString()}] 上传完成: ${fileNames.join(
           ", "
-        )} (${files.length}/${results.length} 成功)`,
+        )} (${files.length}/${results?.length || files.length} 成功)`,
       ]);
     };
 
@@ -493,6 +493,519 @@ export const WithProgress: Story = {
     docs: {
       description: {
         story: "演示带有进度跟踪和历史记录的上传按钮。",
+      },
+    },
+  },
+};
+
+// 没有 uploadFunction 的案例
+export const NoUploadFunction: Story = {
+  args: {
+    children: "文件选择",
+    multiple: true,
+    onUpload: (files: File[]) => {
+      console.log("选择的文件:", files);
+      alert(
+        `已选择 ${files.length} 个文件: ${files.map((f) => f.name).join(", ")}`
+      );
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "没有上传功能的按钮，仅用于文件选择。用户选择文件后会立即触发 onUpload 回调。",
+      },
+    },
+  },
+};
+
+export const FileSelectionOnly: Story = {
+  render: () => {
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+    const handleFileSelection = (files: File[]) => {
+      setSelectedFiles(files);
+    };
+
+    const clearSelection = () => {
+      setSelectedFiles([]);
+    };
+
+    return (
+      <div style={{ maxWidth: "500px", padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <UploadButton
+            onUpload={handleFileSelection}
+            multiple={true}
+            variant="outline"
+          >
+            选择文件 (无上传)
+          </UploadButton>
+
+          {selectedFiles.length > 0 && (
+            <button
+              onClick={clearSelection}
+              style={{
+                marginLeft: "12px",
+                padding: "8px 16px",
+                background: "#64748b",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              清空选择
+            </button>
+          )}
+        </div>
+
+        <div>
+          <h4 style={{ margin: "0 0 8px 0" }}>已选择的文件:</h4>
+          <div
+            style={{
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              borderRadius: "4px",
+              padding: "12px",
+              minHeight: "100px",
+            }}
+          >
+            {selectedFiles.length === 0 ? (
+              <p style={{ margin: 0, color: "#64748b" }}>尚未选择任何文件</p>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: "20px" }}>
+                {selectedFiles.map((file, index) => (
+                  <li key={index} style={{ marginBottom: "4px" }}>
+                    <strong>{file.name}</strong> (
+                    {(file.size / 1024).toFixed(1)} KB)
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "演示纯文件选择功能，显示所选文件信息但不执行上传。",
+      },
+    },
+  },
+};
+
+export const ImagePreview: Story = {
+  render: () => {
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+    const handleImageSelection = (files: File[]) => {
+      setSelectedImages(files);
+
+      // 生成图片预览
+      const previews: string[] = [];
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            previews.push(e.target.result as string);
+            if (previews.length === files.length) {
+              setImagePreviews(previews);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const clearSelection = () => {
+      setSelectedImages([]);
+      setImagePreviews([]);
+    };
+
+    return (
+      <div style={{ maxWidth: "600px", padding: "20px" }}>
+        <div style={{ marginBottom: "20px" }}>
+          <UploadButton
+            onUpload={handleImageSelection}
+            acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif", ".webp"]}
+            multiple={true}
+            variant="secondary"
+          >
+            选择图片预览
+          </UploadButton>
+
+          {selectedImages.length > 0 && (
+            <button
+              onClick={clearSelection}
+              style={{
+                marginLeft: "12px",
+                padding: "8px 16px",
+                background: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              清空预览
+            </button>
+          )}
+        </div>
+
+        {imagePreviews.length > 0 && (
+          <div>
+            <h4 style={{ margin: "0 0 12px 0" }}>图片预览:</h4>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
+                gap: "12px",
+              }}
+            >
+              {imagePreviews.map((preview, index) => (
+                <div
+                  key={index}
+                  style={{
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    background: "#f8fafc",
+                  }}
+                >
+                  <img
+                    src={preview}
+                    alt={selectedImages[index]?.name}
+                    style={{
+                      width: "100%",
+                      height: "120px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: "8px",
+                      fontSize: "12px",
+                      background: "white",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontWeight: "bold",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {selectedImages[index]?.name}
+                    </div>
+                    <div style={{ color: "#64748b" }}>
+                      {(selectedImages[index]?.size / 1024).toFixed(1)} KB
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "选择图片并显示预览，无上传功能。演示如何处理选中的图片文件。",
+      },
+    },
+  },
+};
+
+export const FormIntegration: Story = {
+  render: () => {
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      files: [] as File[],
+    });
+
+    const handleFileSelection = (files: File[]) => {
+      setFormData((prev) => ({ ...prev, files }));
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      console.log("表单数据:", formData);
+      alert(
+        `表单提交:\n标题: ${formData.title}\n描述: ${
+          formData.description
+        }\n文件: ${formData.files.map((f) => f.name).join(", ")}`
+      );
+    };
+
+    const handleReset = () => {
+      setFormData({ title: "", description: "", files: [] });
+    };
+
+    return (
+      <div style={{ maxWidth: "500px", padding: "20px" }}>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontWeight: "bold",
+              }}
+            >
+              标题:
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, title: e.target.value }))
+              }
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #d1d5db",
+                borderRadius: "4px",
+              }}
+              required
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "4px",
+                fontWeight: "bold",
+              }}
+            >
+              描述:
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "8px",
+                border: "1px solid #d1d5db",
+                borderRadius: "4px",
+                resize: "vertical",
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "8px",
+                fontWeight: "bold",
+              }}
+            >
+              附件:
+            </label>
+            <UploadButton
+              onUpload={handleFileSelection}
+              multiple={true}
+              variant="outline"
+              size="small"
+            >
+              选择文件
+            </UploadButton>
+
+            {formData.files.length > 0 && (
+              <div style={{ marginTop: "8px", fontSize: "14px" }}>
+                <strong>已选择 {formData.files.length} 个文件:</strong>
+                <ul style={{ margin: "4px 0", paddingLeft: "20px" }}>
+                  {formData.files.map((file, index) => (
+                    <li key={index}>{file.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button
+              type="submit"
+              style={{
+                padding: "10px 20px",
+                background: "#3b82f6",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              提交表单
+            </button>
+
+            <button
+              type="button"
+              onClick={handleReset}
+              style={{
+                padding: "10px 20px",
+                background: "#6b7280",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              重置
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "演示如何将文件选择按钮集成到表单中，作为表单数据的一部分。",
+      },
+    },
+  },
+};
+
+export const MultipleSelectionTypes: Story = {
+  render: () => {
+    const [allFiles, setAllFiles] = useState<{ [key: string]: File[] }>({
+      documents: [],
+      images: [],
+      any: [],
+    });
+
+    const handleFileSelection = (type: string) => (files: File[]) => {
+      setAllFiles((prev) => ({ ...prev, [type]: files }));
+    };
+
+    const clearAll = () => {
+      setAllFiles({ documents: [], images: [], any: [] });
+    };
+
+    const totalFiles = Object.values(allFiles).flat().length;
+
+    return (
+      <div style={{ maxWidth: "600px", padding: "20px" }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            gap: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          <UploadButton
+            onUpload={handleFileSelection("documents")}
+            acceptedFileTypes={[".pdf", ".doc", ".docx", ".txt"]}
+            multiple={true}
+            variant="primary"
+            size="small"
+          >
+            选择文档
+          </UploadButton>
+
+          <UploadButton
+            onUpload={handleFileSelection("images")}
+            acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif"]}
+            multiple={true}
+            variant="secondary"
+            size="small"
+          >
+            选择图片
+          </UploadButton>
+
+          <UploadButton
+            onUpload={handleFileSelection("any")}
+            multiple={true}
+            variant="outline"
+            size="small"
+          >
+            选择任意文件
+          </UploadButton>
+
+          {totalFiles > 0 && (
+            <button
+              onClick={clearAll}
+              style={{
+                padding: "6px 12px",
+                background: "#ef4444",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+            >
+              清空所有
+            </button>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: "16px",
+          }}
+        >
+          {Object.entries(allFiles).map(([type, files]) => (
+            <div key={type}>
+              <h4 style={{ margin: "0 0 8px 0", textTransform: "capitalize" }}>
+                {type === "documents"
+                  ? "文档"
+                  : type === "images"
+                  ? "图片"
+                  : "其他文件"}{" "}
+                ({files.length})
+              </h4>
+              <div
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "4px",
+                  padding: "8px",
+                  minHeight: "120px",
+                  fontSize: "12px",
+                }}
+              >
+                {files.length === 0 ? (
+                  <p style={{ margin: 0, color: "#64748b" }}>无文件</p>
+                ) : (
+                  <ul style={{ margin: 0, paddingLeft: "16px" }}>
+                    {files.map((file, index) => (
+                      <li key={index} style={{ marginBottom: "2px" }}>
+                        {file.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "演示多个不同类型的文件选择按钮，每个按钮有不同的文件类型限制。",
       },
     },
   },
