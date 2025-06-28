@@ -84,6 +84,44 @@ function BasicUpload() {
 }
 ```
 
+### 仅文件选择（不上传）
+
+当不提供 `uploadFunction` 时，组件将作为纯文件选择器使用：
+
+```tsx
+import React from 'react';
+import { UploadButton } from 'react-progress-uploader';
+
+function FileSelector() {
+  const handleFileSelection = (files) => {
+    console.log('用户选择的文件:', files);
+    // 处理选择的文件（例如：预览、验证、保存到状态等）
+    files.forEach(file => {
+      console.log(`文件: ${file.name}, 大小: ${file.size} bytes`);
+    });
+  };
+
+  return (
+    <UploadButton
+      onUpload={handleFileSelection}
+      multiple={true}
+      acceptedFileTypes={['.jpg', '.png', '.pdf']}
+      maxFiles={5}
+      maxFileSize={5 * 1024 * 1024} // 5MB
+    >
+      选择文件
+    </UploadButton>
+  );
+}
+```
+
+这种模式非常适合以下场景：
+- 📁 文件选择器
+- 🖼️ 图片预览
+- ✅ 文件验证
+- 📋 文件信息收集
+- 🔄 自定义上传逻辑
+
 ### 使用 axios
 
 ```tsx
@@ -162,7 +200,7 @@ import { UploadButton } from 'react-progress-uploader';
 
 | 属性 | 类型 | 默认值 | 描述 |
 |------|------|--------|------|
-| `uploadFunction` | `UploadFunction` | **必需** | 上传函数实现 |
+| `uploadFunction` | `UploadFunction` | `undefined` | 上传函数实现（可选，不提供时作为文件选择器） |
 | `children` | `ReactNode` | `"上传文件"` | 按钮内容 |
 | `variant` | `"primary" \| "secondary" \| "outline"` | `"primary"` | 按钮样式 |
 | `size` | `"small" \| "medium" \| "large"` | `"medium"` | 按钮尺寸 |
@@ -189,7 +227,7 @@ import { DialogUploader } from 'react-progress-uploader';
 |------|------|--------|------|
 | `isOpen` | `boolean` | **必需** | 是否显示对话框 |
 | `onClose` | `() => void` | **必需** | 关闭对话框回调 |
-| `uploadFunction` | `UploadFunction` | **必需** | 上传函数实现 |
+| `uploadFunction` | `UploadFunction` | `undefined` | 上传函数实现（可选，不提供时作为文件选择器） |
 | `onUpload` | `UploadCallback` | `undefined` | 上传完成回调 |
 | `onUploadProgress` | `ProgressCallback` | `undefined` | 进度更新回调 |
 | `multiple` | `boolean` | `true` | 是否支持多文件 |

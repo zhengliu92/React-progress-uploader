@@ -20,10 +20,13 @@ export interface UploadResult {
 }
 
 interface UseUploadQueueOptions {
-  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   onUploadProgress?: (progress: UploadProgress[]) => void;
-  onUploadComplete?: (successfulFiles: File[], results: UploadResult[]) => void;
+  onUploadComplete?: (
+    successfulFiles: File[],
+    results?: UploadResult[]
+  ) => void;
 }
 
 export const useUploadQueue = ({
@@ -116,22 +119,24 @@ export const useUploadQueue = ({
           return updated;
         });
 
-        const result = await uploadFunction({
-          file,
-          onProgress: (progress) => {
-            setUploadProgress((prev) => {
-              const updated = [...prev];
-              if (updated[index] && updated[index].status !== "cancelled") {
-                updated[index] = {
-                  ...updated[index],
-                  progress,
-                };
-              }
-              return updated;
-            });
-          },
-          signal: controller.signal,
-        });
+        const result = uploadFunction
+          ? await uploadFunction({
+              file,
+              onProgress: (progress) => {
+                setUploadProgress((prev) => {
+                  const updated = [...prev];
+                  if (updated[index] && updated[index].status !== "cancelled") {
+                    updated[index] = {
+                      ...updated[index],
+                      progress,
+                    };
+                  }
+                  return updated;
+                });
+              },
+              signal: controller.signal,
+            })
+          : { success: true, data: null };
 
         // 上传成功
         setUploadProgress((prev) => {
@@ -179,6 +184,15 @@ export const useUploadQueue = ({
       if (files.length === 0) return;
 
       selectedFilesRef.current = files;
+
+      // 如果没有上传函数，直接调用完成回调
+      if (!uploadFunction) {
+        if (onUploadComplete) {
+          onUploadComplete(files);
+        }
+        return;
+      }
+
       setIsUploading(true);
       uploadAborted.current = false;
       abortControllers.current = new Array(files.length).fill(null);
@@ -221,7 +235,7 @@ export const useUploadQueue = ({
         console.error("上传过程中出现错误:", error);
       }
     },
-    [maxConcurrent, uploadSingleFile]
+    [maxConcurrent, uploadSingleFile, uploadFunction, onUploadComplete]
   );
 
   // 取消所有上传

@@ -13,11 +13,11 @@ import "./DialogUploader.css";
 interface DialogUploaderProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload?: (successfulFiles: File[], results: UploadResult[]) => void;
+  onUpload?: (successfulFiles: File[], results?: UploadResult[]) => void;
   onUploadProgress?: (progress: UploadProgress[]) => void;
   multiple?: boolean;
   acceptedFileTypes?: string[];
-  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   maxFiles?: number;
   maxFileSize?: number;
@@ -91,7 +91,15 @@ export const DialogUploader: React.FC<DialogUploaderProps> = ({
 
   const handleConfirmUpload = () => {
     if (selectedFiles.length > 0) {
-      startUpload(selectedFiles);
+      if (uploadFunction) {
+        startUpload(selectedFiles);
+      } else {
+        // 如果没有上传函数，直接调用onUpload并关闭对话框
+        if (onUpload) {
+          onUpload(selectedFiles);
+        }
+        onClose();
+      }
     }
   };
 
@@ -481,7 +489,9 @@ export const DialogUploader: React.FC<DialogUploaderProps> = ({
                 onClick={handleConfirmUpload}
                 disabled={selectedFiles.length === 0}
               >
-                开始上传 ({selectedFiles.length})
+                {uploadFunction
+                  ? `开始上传 (${selectedFiles.length})`
+                  : `确认选择 (${selectedFiles.length})`}
               </button>
             </>
           )}

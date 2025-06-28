@@ -8,11 +8,11 @@ interface UploadButtonProps {
   className?: string;
   variant?: "primary" | "secondary" | "outline";
   size?: "small" | "medium" | "large";
-  onUpload?: (successfulFiles: File[], results: UploadResult[]) => void;
+  onUpload?: (successfulFiles: File[], results?: UploadResult[]) => void;
   onUploadProgress?: (progress: UploadProgress[]) => void;
   multiple?: boolean;
   acceptedFileTypes?: string[];
-  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   maxFiles?: number;
   maxFileSize?: number; // 单位：字节
@@ -46,7 +46,7 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
     setIsDialogOpen(false);
   };
 
-  const handleUpload = (successfulFiles: File[], results: UploadResult[]) => {
+  const handleUpload = (successfulFiles: File[], results?: UploadResult[]) => {
     if (onUpload) {
       onUpload(successfulFiles, results);
     }

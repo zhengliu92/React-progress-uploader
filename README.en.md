@@ -84,6 +84,44 @@ function BasicUpload() {
 }
 ```
 
+### File Selection Only (No Upload)
+
+When `uploadFunction` is not provided, the component works as a pure file selector:
+
+```tsx
+import React from 'react';
+import { UploadButton } from 'react-progress-uploader';
+
+function FileSelector() {
+  const handleFileSelection = (files) => {
+    console.log('User selected files:', files);
+    // Handle selected files (e.g., preview, validation, save to state, etc.)
+    files.forEach(file => {
+      console.log(`File: ${file.name}, Size: ${file.size} bytes`);
+    });
+  };
+
+  return (
+    <UploadButton
+      onUpload={handleFileSelection}
+      multiple={true}
+      acceptedFileTypes={['.jpg', '.png', '.pdf']}
+      maxFiles={5}
+      maxFileSize={5 * 1024 * 1024} // 5MB
+    >
+      Select Files
+    </UploadButton>
+  );
+}
+```
+
+This mode is perfect for scenarios like:
+- 📁 File picker
+- 🖼️ Image preview
+- ✅ File validation
+- 📋 File information collection
+- 🔄 Custom upload logic
+
 ### Using axios
 
 ```tsx
@@ -162,7 +200,7 @@ import { UploadButton } from 'react-progress-uploader';
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `uploadFunction` | `UploadFunction` | **Required** | Upload function implementation |
+| `uploadFunction` | `UploadFunction` | `undefined` | Upload function implementation (optional, works as file selector when not provided) |
 | `children` | `ReactNode` | `"Upload Files"` | Button content |
 | `variant` | `"primary" \| "secondary" \| "outline"` | `"primary"` | Button style |
 | `size` | `"small" \| "medium" \| "large"` | `"medium"` | Button size |
@@ -189,7 +227,7 @@ import { DialogUploader } from 'react-progress-uploader';
 |----------|------|---------|-------------|
 | `isOpen` | `boolean` | **Required** | Whether to show dialog |
 | `onClose` | `() => void` | **Required** | Close dialog callback |
-| `uploadFunction` | `UploadFunction` | **Required** | Upload function implementation |
+| `uploadFunction` | `UploadFunction` | `undefined` | Upload function implementation (optional, works as file selector when not provided) |
 | `onUpload` | `UploadCallback` | `undefined` | Upload completion callback |
 | `onUploadProgress` | `ProgressCallback` | `undefined` | Progress update callback |
 | `multiple` | `boolean` | `true` | Support multiple files |
