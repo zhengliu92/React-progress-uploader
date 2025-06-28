@@ -7,11 +7,11 @@ interface UploaderProps {
   acceptedFileTypes?: string[];
 }
 
-export const Uploader: React.FC<UploaderProps> = ({
+export const Uploader = ({
   onFileSelect,
   multiple = false,
   acceptedFileTypes,
-}) => {
+}: UploaderProps) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

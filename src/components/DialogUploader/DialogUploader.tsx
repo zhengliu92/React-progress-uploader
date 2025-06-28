@@ -23,7 +23,7 @@ interface DialogUploaderProps {
   maxFileSize?: number;
 }
 
-export const DialogUploader: React.FC<DialogUploaderProps> = ({
+export const DialogUploader = ({
   isOpen,
   onClose,
   onUpload,
@@ -34,7 +34,7 @@ export const DialogUploader: React.FC<DialogUploaderProps> = ({
   maxConcurrent = 3,
   maxFiles = 10,
   maxFileSize,
-}) => {
+}: DialogUploaderProps) => {
   // 使用文件选择hook
   const { selectedFiles, selectionError, addFiles, removeFile, clearFiles } =
     useFileSelection({

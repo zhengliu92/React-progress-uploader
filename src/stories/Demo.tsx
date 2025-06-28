@@ -4,7 +4,7 @@ import { Uploader } from "../components/Uploader/Uploader";
 import { UploadProgress, UploadResult, UploadOptions } from "../hooks";
 import axios from "axios";
 
-export const Demo: React.FC = () => {
+export const Demo = () => {
   const [uploadHistory, setUploadHistory] = useState<string[]>([]);
   const [progressLogs, setProgressLogs] = useState<string[]>([]);
   const lastLogKey = useRef<string>("");

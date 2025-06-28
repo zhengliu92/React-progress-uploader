@@ -12,7 +12,8 @@
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "strict": true
+    "strict": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/*.stories.ts", "**/*.stories.tsx", ".storybook"]
