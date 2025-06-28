@@ -1,10 +1,10 @@
-# React Uploader
+# React Progress Uploader
 
 **语言 / Language:** [🇺🇸 English](./README.en.md) | [🇨🇳 中文](./README.md)
 
 一个功能完整、类型安全的 React 文件上传组件库，支持拖拽上传、实时进度显示、文件类型限制、取消上传等特性。
 
-[![npm version](https://badge.fury.io/js/react-uploader.svg)](https://badge.fury.io/js/react-uploader)
+[![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -25,13 +25,13 @@
 
 ```bash
 # 使用 npm
-npm install react-uploader
+npm install react-progress-uploader
 
 # 使用 yarn  
-yarn add react-uploader
+yarn add react-progress-uploader
 
 # 使用 pnpm
-pnpm add react-uploader
+pnpm add react-progress-uploader
 ```
 
 ### 可选依赖
@@ -47,7 +47,7 @@ npm install axios
 
 ```tsx
 import React from 'react';
-import { UploadButton } from 'react-uploader';
+import { UploadButton } from 'react-progress-uploader';
 
 // 最简单的使用方式
 function BasicUpload() {
@@ -85,7 +85,7 @@ function BasicUpload() {
 
 ```tsx
 import React from 'react';
-import { UploadButton } from 'react-uploader';
+import { UploadButton } from 'react-progress-uploader';
 import axios from 'axios';
 
 function AxiosUpload() {
@@ -152,7 +152,7 @@ function AxiosUpload() {
 快速集成的按钮式上传组件。
 
 ```tsx
-import { UploadButton } from 'react-uploader';
+import { UploadButton } from 'react-progress-uploader';
 ```
 
 #### Props
@@ -177,7 +177,7 @@ import { UploadButton } from 'react-uploader';
 对话框式上传组件，提供完整的上传界面。
 
 ```tsx
-import { DialogUploader } from 'react-uploader';
+import { DialogUploader } from 'react-progress-uploader';
 ```
 
 #### Props
@@ -200,7 +200,7 @@ import { DialogUploader } from 'react-uploader';
 基础的拖拽上传区域组件。
 
 ```tsx
-import { Uploader } from 'react-uploader';
+import { Uploader } from 'react-progress-uploader';
 ```
 
 #### Props
@@ -218,7 +218,7 @@ import { Uploader } from 'react-uploader';
 文件上传队列管理 hook。
 
 ```tsx
-import { useUploadQueue } from 'react-uploader';
+import { useUploadQueue } from 'react-progress-uploader';
 
 const {
   uploadProgress,
@@ -240,7 +240,7 @@ const {
 文件选择和验证 hook。
 
 ```tsx
-import { useFileSelection } from 'react-uploader';
+import { useFileSelection } from 'react-progress-uploader';
 
 const {
   selectedFiles,
@@ -263,7 +263,7 @@ const {
 UI 工具函数 hook。
 
 ```tsx
-import { useUploadUI } from 'react-uploader';
+import { useUploadUI } from 'react-progress-uploader';
 
 const {
   getProgressColor,
@@ -733,7 +733,7 @@ acceptedFileTypes={['jpg', 'png']}   // ❌ 错误
 **Q: 样式不生效？**
 A: 确保导入了CSS文件：
 ```tsx
-import 'react-uploader/dist/style.css';
+import 'react-progress-uploader/dist/style.css';
 ```
 
 **Q: TypeScript 类型错误？**

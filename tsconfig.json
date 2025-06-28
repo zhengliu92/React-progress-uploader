@@ -12,6 +12,7 @@
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
+    "emitDeclarationOnly": true,
     "strict": true
   },
   "include": ["src"],

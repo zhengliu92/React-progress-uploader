@@ -1,20 +1,60 @@
 {
-  "name": "react-uploader",
-  "version": "0.1.0",
+  "name": "react-progress-uploader",
+  "version": "1.0.0",
+  "description": "一个功能完整、类型安全的 React 文件上传组件库，支持拖拽上传、实时进度显示、文件类型限制、取消上传等特性。",
+  "keywords": [
+    "react",
+    "upload",
+    "file-upload",
+    "drag-drop",
+    "progress",
+    "typescript",
+    "uploader",
+    "component"
+  ],
+  "author": "zhengliu92",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhengliu92/React-progress-uploader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhengliu92/React-progress-uploader/issues"
+  },
+  "homepage": "https://github.com/zhengliu92/React-progress-uploader#readme",
   "main": "./dist/react-uploader.umd.js",
   "module": "./dist/react-uploader.es.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/react-uploader.es.js",
+      "require": "./dist/react-uploader.umd.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
   ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:lib": "npm run clean && npm run build",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build:lib",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "deploy-storybook": "npm run build-storybook && npx storybook-to-ghpages",
+    "preview": "npm run build && npm pack",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "echo \"Warning: no test specified\" && exit 0"
   },
   "peerDependencies": {
     "react": "^18.0.0",
+    "axios": "^1.10.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
@@ -29,6 +69,5 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "axios": "^1.10.0"
   }
 }
