@@ -20,7 +20,7 @@ export interface UploadResult {
 }
 
 interface UseUploadQueueOptions {
-  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   onUploadProgress?: (progress: UploadProgress[]) => void;
   onUploadComplete?: (
@@ -86,12 +86,9 @@ export const useUploadQueue = ({
   // 上传单个文件
   const uploadSingleFile = useCallback(
     async (file: File, index: number): Promise<void> => {
-      console.log(`开始上传文件: ${file.name} (索引: ${index})`);
-
       // 检查文件是否已被取消
       const currentStatus = uploadProgress[index]?.status;
       if (currentStatus === "cancelled") {
-        console.log(`文件 ${file.name} (索引: ${index}) 已被取消，跳过上传`);
         return;
       }
 
@@ -119,35 +116,43 @@ export const useUploadQueue = ({
           return updated;
         });
 
-        const result = uploadFunction
-          ? await uploadFunction({
-              file,
-              onProgress: (progress) => {
-                setUploadProgress((prev) => {
-                  const updated = [...prev];
-                  if (updated[index] && updated[index].status !== "cancelled") {
-                    updated[index] = {
-                      ...updated[index],
-                      progress,
-                    };
-                  }
-                  return updated;
-                });
-              },
-              signal: controller.signal,
-            })
-          : { success: true, data: null };
+        const result = await uploadFunction({
+          file,
+          onProgress: (progress) => {
+            setUploadProgress((prev) => {
+              const updated = [...prev];
+              if (updated[index] && updated[index].status !== "cancelled") {
+                updated[index] = {
+                  ...updated[index],
+                  progress,
+                };
+              }
+              return updated;
+            });
+          },
+          signal: controller.signal,
+        });
 
-        // 上传成功
+        // 根据后端返回结果处理
         setUploadProgress((prev) => {
           const updated = [...prev];
           if (updated[index] && updated[index].status !== "cancelled") {
-            updated[index] = {
-              ...updated[index],
-              progress: 100,
-              status: result.success ? "completed" : "error",
-              error: result.success ? undefined : result.error,
-            };
+            if (result.success) {
+              // 后端返回成功，立即跳到100%
+              updated[index] = {
+                ...updated[index],
+                progress: 100,
+                status: "completed",
+                error: undefined,
+              };
+            } else {
+              // 后端返回失败，保持当前进度但设置为错误状态
+              updated[index] = {
+                ...updated[index],
+                status: "error",
+                error: result.error || "上传失败",
+              };
+            }
           }
           return updated;
         });
@@ -184,14 +189,6 @@ export const useUploadQueue = ({
       if (files.length === 0) return;
 
       selectedFilesRef.current = files;
-
-      // 如果没有上传函数，直接调用完成回调
-      if (!uploadFunction) {
-        if (onUploadComplete) {
-          onUploadComplete(files);
-        }
-        return;
-      }
 
       setIsUploading(true);
       uploadAborted.current = false;

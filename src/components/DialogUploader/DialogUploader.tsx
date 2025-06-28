@@ -17,7 +17,7 @@ interface DialogUploaderProps {
   onUploadProgress?: (progress: UploadProgress[]) => void;
   multiple?: boolean;
   acceptedFileTypes?: string[];
-  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   maxFiles?: number;
   maxFileSize?: number;
@@ -91,15 +91,8 @@ export const DialogUploader = ({
 
   const handleConfirmUpload = () => {
     if (selectedFiles.length > 0) {
-      if (uploadFunction) {
-        startUpload(selectedFiles);
-      } else {
-        // 如果没有上传函数，直接调用onUpload并关闭对话框
-        if (onUpload) {
-          onUpload(selectedFiles);
-        }
-        onClose();
-      }
+      // 启动上传流程
+      startUpload(selectedFiles);
     }
   };
 
@@ -213,11 +206,7 @@ export const DialogUploader = ({
       <div className="dialog-uploader-content">
         <div className="dialog-uploader-header">
           <h2 className="dialog-uploader-title">
-            {isUploading
-              ? "文件上传中"
-              : uploadProgress.length > 0 && stats.isAllCompleted
-              ? "上传完成"
-              : "文件上传"}
+            {getOverallStatusTitle(isUploading, isCancelling, uploadProgress)}
             {multiple &&
               !isUploading &&
               uploadProgress.length === 0 &&
@@ -489,9 +478,7 @@ export const DialogUploader = ({
                 onClick={handleConfirmUpload}
                 disabled={selectedFiles.length === 0}
               >
-                {uploadFunction
-                  ? `开始上传 (${selectedFiles.length})`
-                  : `确认选择 (${selectedFiles.length})`}
+                开始上传 ({selectedFiles.length})
               </button>
             </>
           )}

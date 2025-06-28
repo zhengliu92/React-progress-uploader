@@ -117,7 +117,14 @@ export const useUploadUI = () => {
         return `上传进度 (${stats.completed}/${stats.total})`;
       }
 
-      return "选择文件";
+      if (progress.length > 0) {
+        const stats = getUploadStats(progress);
+        if (stats.isAllCompleted) {
+          return "上传完成";
+        }
+      }
+
+      return "文件上传";
     },
     [getUploadStats]
   );

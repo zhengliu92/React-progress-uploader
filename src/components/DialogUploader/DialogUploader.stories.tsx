@@ -137,6 +137,9 @@ DialogUploader是一个功能完整的弹窗式文件上传组件。
       control: "object",
       description: "允许的文件类型数组",
     },
+    uploadFunction: {
+      description: "必需的上传函数，处理文件上传逻辑",
+    },
     maxConcurrent: {
       control: { type: "number", min: 1, max: 10 },
       description: "最大并发上传数量",
@@ -148,6 +151,14 @@ DialogUploader是一个功能完整的弹窗式文件上传组件。
     maxFileSize: {
       control: "number",
       description: "单个文件最大大小（字节）",
+    },
+    onUpload: {
+      action: "onUpload",
+      description: "文件上传完成回调",
+    },
+    onUploadProgress: {
+      action: "onUploadProgress",
+      description: "上传进度回调",
     },
   },
 };

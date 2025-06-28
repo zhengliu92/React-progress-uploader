@@ -12,7 +12,7 @@ interface UploadButtonProps {
   onUploadProgress?: (progress: UploadProgress[]) => void;
   multiple?: boolean;
   acceptedFileTypes?: string[];
-  uploadFunction?: (options: UploadOptions) => Promise<UploadResult>;
+  uploadFunction: (options: UploadOptions) => Promise<UploadResult>;
   maxConcurrent?: number;
   maxFiles?: number;
   maxFileSize?: number; // 单位：字节

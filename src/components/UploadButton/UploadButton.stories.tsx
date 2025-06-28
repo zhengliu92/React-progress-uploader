@@ -98,6 +98,29 @@ const meta: Meta<typeof UploadButton> = {
   component: UploadButton,
   parameters: {
     layout: "centered",
+    docs: {
+      description: {
+        component: `
+UploadButton 是一个功能完整的文件上传按钮组件。
+
+## 主要特性
+
+- **真实上传**：必须提供 uploadFunction 来处理文件上传
+- **多种样式**：支持 primary、secondary、outline 三种样式
+- **多尺寸支持**：small、medium、large 三种尺寸
+- **文件过滤**：支持文件类型和大小限制
+- **进度显示**：内置弹窗显示上传进度
+- **并发控制**：可配置最大并发上传数量
+
+## 使用场景
+
+- 需要简单上传按钮的场景
+- 表单中的文件上传字段
+- 快速文件上传需求
+- 需要自定义样式的上传按钮
+        `,
+      },
+    },
   },
   tags: ["autodocs"],
   argTypes: {
@@ -127,9 +150,20 @@ const meta: Meta<typeof UploadButton> = {
       control: "number",
       description: "最大并发上传数量",
     },
+    maxFiles: {
+      control: "number",
+      description: "最大文件数量限制",
+    },
+    maxFileSize: {
+      control: "number",
+      description: "单个文件最大大小（字节）",
+    },
     disabled: {
       control: "boolean",
       description: "是否禁用按钮",
+    },
+    uploadFunction: {
+      description: "必需的上传函数，处理文件上传逻辑",
     },
     onUpload: {
       action: "onUpload",
@@ -498,34 +532,39 @@ export const WithProgress: Story = {
   },
 };
 
-// 没有 uploadFunction 的案例
-export const NoUploadFunction: Story = {
+// 即时上传模式 - 选择文件后立即上传
+export const InstantUpload: Story = {
   args: {
-    children: "文件选择",
+    children: "选择并立即上传",
     multiple: true,
-    onUpload: (files: File[]) => {
-      console.log("选择的文件:", files);
+    uploadFunction: mockUploadFunction,
+    onUpload: (files: File[], results?: UploadResult[]) => {
+      console.log("上传完成的文件:", files);
+      const successCount =
+        results?.filter((r) => r.success).length || files.length;
       alert(
-        `已选择 ${files.length} 个文件: ${files.map((f) => f.name).join(", ")}`
+        `已上传 ${successCount}/${files.length} 个文件: ${files
+          .map((f) => f.name)
+          .join(", ")}`
       );
     },
   },
   parameters: {
     docs: {
       description: {
-        story:
-          "没有上传功能的按钮，仅用于文件选择。用户选择文件后会立即触发 onUpload 回调。",
+        story: "选择文件后立即开始上传，适用于需要快速上传的场景。",
       },
     },
   },
 };
 
-export const FileSelectionOnly: Story = {
+export const FileSelectionDemo: Story = {
   render: () => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-    const handleFileSelection = (files: File[]) => {
+    const handleFileUpload = (files: File[], results?: UploadResult[]) => {
       setSelectedFiles(files);
+      console.log("上传完成:", files, results);
     };
 
     const clearSelection = () => {
@@ -536,11 +575,12 @@ export const FileSelectionOnly: Story = {
       <div style={{ maxWidth: "500px", padding: "20px" }}>
         <div style={{ marginBottom: "20px" }}>
           <UploadButton
-            onUpload={handleFileSelection}
+            onUpload={handleFileUpload}
+            uploadFunction={mockUploadFunction}
             multiple={true}
             variant="outline"
           >
-            选择文件 (无上传)
+            选择并上传文件
           </UploadButton>
 
           {selectedFiles.length > 0 && (
@@ -592,19 +632,20 @@ export const FileSelectionOnly: Story = {
   parameters: {
     docs: {
       description: {
-        story: "演示纯文件选择功能，显示所选文件信息但不执行上传。",
+        story: "演示文件上传功能，上传完成后显示文件信息，用于文件管理场景。",
       },
     },
   },
 };
 
-export const ImagePreview: Story = {
+export const ImageUploadWithPreview: Story = {
   render: () => {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-    const handleImageSelection = (files: File[]) => {
+    const handleImageUpload = (files: File[], results?: UploadResult[]) => {
       setSelectedImages(files);
+      console.log("图片上传完成:", files, results);
 
       // 生成图片预览
       const previews: string[] = [];
@@ -631,12 +672,13 @@ export const ImagePreview: Story = {
       <div style={{ maxWidth: "600px", padding: "20px" }}>
         <div style={{ marginBottom: "20px" }}>
           <UploadButton
-            onUpload={handleImageSelection}
+            onUpload={handleImageUpload}
+            uploadFunction={mockUploadFunction}
             acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif", ".webp"]}
             multiple={true}
             variant="secondary"
           >
-            选择图片预览
+            上传图片并预览
           </UploadButton>
 
           {selectedImages.length > 0 && (
@@ -718,7 +760,7 @@ export const ImagePreview: Story = {
   parameters: {
     docs: {
       description: {
-        story: "选择图片并显示预览，无上传功能。演示如何处理选中的图片文件。",
+        story: "上传图片并显示预览，演示如何在上传完成后处理和预览图片文件。",
       },
     },
   },
@@ -732,8 +774,9 @@ export const FormIntegration: Story = {
       files: [] as File[],
     });
 
-    const handleFileSelection = (files: File[]) => {
+    const handleFileUpload = (files: File[], results?: UploadResult[]) => {
       setFormData((prev) => ({ ...prev, files }));
+      console.log("表单文件上传完成:", files, results);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -819,7 +862,8 @@ export const FormIntegration: Story = {
               附件:
             </label>
             <UploadButton
-              onUpload={handleFileSelection}
+              onUpload={handleFileUpload}
+              uploadFunction={mockUploadFunction}
               multiple={true}
               variant="outline"
               size="small"
@@ -876,7 +920,8 @@ export const FormIntegration: Story = {
   parameters: {
     docs: {
       description: {
-        story: "演示如何将文件选择按钮集成到表单中，作为表单数据的一部分。",
+        story:
+          "演示如何将文件上传按钮集成到表单中，上传完成后文件会作为表单数据的一部分。",
       },
     },
   },
@@ -890,9 +935,11 @@ export const MultipleSelectionTypes: Story = {
       any: [],
     });
 
-    const handleFileSelection = (type: string) => (files: File[]) => {
-      setAllFiles((prev) => ({ ...prev, [type]: files }));
-    };
+    const handleFileUpload =
+      (type: string) => (files: File[], results?: UploadResult[]) => {
+        setAllFiles((prev) => ({ ...prev, [type]: files }));
+        console.log(`${type} 文件上传完成:`, files, results);
+      };
 
     const clearAll = () => {
       setAllFiles({ documents: [], images: [], any: [] });
@@ -911,32 +958,35 @@ export const MultipleSelectionTypes: Story = {
           }}
         >
           <UploadButton
-            onUpload={handleFileSelection("documents")}
+            onUpload={handleFileUpload("documents")}
+            uploadFunction={mockUploadFunction}
             acceptedFileTypes={[".pdf", ".doc", ".docx", ".txt"]}
             multiple={true}
             variant="primary"
             size="small"
           >
-            选择文档
+            上传文档
           </UploadButton>
 
           <UploadButton
-            onUpload={handleFileSelection("images")}
+            onUpload={handleFileUpload("images")}
+            uploadFunction={mockUploadFunction}
             acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif"]}
             multiple={true}
             variant="secondary"
             size="small"
           >
-            选择图片
+            上传图片
           </UploadButton>
 
           <UploadButton
-            onUpload={handleFileSelection("any")}
+            onUpload={handleFileUpload("any")}
+            uploadFunction={mockUploadFunction}
             multiple={true}
             variant="outline"
             size="small"
           >
-            选择任意文件
+            上传任意文件
           </UploadButton>
 
           {totalFiles > 0 && (
@@ -1005,7 +1055,8 @@ export const MultipleSelectionTypes: Story = {
   parameters: {
     docs: {
       description: {
-        story: "演示多个不同类型的文件选择按钮，每个按钮有不同的文件类型限制。",
+        story:
+          "演示多个不同类型的文件上传按钮，每个按钮有不同的文件类型限制，支持分类上传管理。",
       },
     },
   },
