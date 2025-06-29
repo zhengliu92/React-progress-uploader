@@ -134,12 +134,13 @@ export const DialogUploader = ({
           )}
 
           {/* 文件选择区域 */}
-          {uploadProgress.length === 0 && (
+          {uploadProgress.length === 0 && selectedFiles.length === 0 && (
             <Uploader
               onFileSelect={handleFileSelect}
               multiple={multiple}
               acceptedFileTypes={acceptedFileTypes}
               uploadFunction={() => Promise.resolve({ success: true })}
+              hideActions={true}
             />
           )}
 

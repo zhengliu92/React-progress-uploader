@@ -4,7 +4,7 @@ import { IconBase, IconProps } from "./IconBase";
 export const DialogUploadIcon: React.FC<IconProps> = ({
   size = 20,
   className,
-  stroke = "#6B7280",
+  stroke = "currentColor",
   strokeWidth = 2,
   ...props
 }) => {

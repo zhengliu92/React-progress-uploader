@@ -9,6 +9,21 @@
 
 **[查看实时演示和文档](https://zhengliu92.github.io/React-progress-uploader/)**
 
+## 🔧 最近更新 (v1.1.2)
+
+### Bug 修复
+
+- ✅ **修复文件列表重复显示问题** - 在 DialogUploader 中，同一文件不再重复显示
+- ✅ **修复重复上传按钮问题** - 移除了 DialogUploader 中的重复"开始上传"按钮
+- ✅ **优化 Windows 兼容性** - 使用`rimraf`替代`rm`命令，确保在 Windows 系统上正常构建
+- ✅ **修复 npm 源配置问题** - 默认使用官方 npm 源，提升下载速度
+
+### 技术改进
+
+- 🚀 **新增 hideActions 属性** - Uploader 组件支持隐藏按钮区域，提供更灵活的集成方式
+- 📦 **优化构建流程** - 改进 Windows 系统上的构建体验
+- 🔍 **更好的类型安全** - 优化 TypeScript 类型定义
+
 ## 📦 安装
 
 ```bash
@@ -123,6 +138,173 @@ function DragDropUpload() {
 }
 ```
 
+### 自定义按钮颜色
+
+```tsx
+import { UploadButton } from "react-progress-uploader";
+
+function CustomColorUpload() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* 方法1: 使用颜色属性 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        backgroundColor='#10B981' // 绿色背景
+        color='white' // 白色文字
+        variant='custom'
+      >
+        绿色按钮
+      </UploadButton>
+
+      {/* 方法2: 使用outline变体 + 自定义边框色 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        variant='outline'
+        borderColor='#F59E0B' // 黄色边框
+        color='#F59E0B' // 黄色文字
+      >
+        黄色边框按钮
+      </UploadButton>
+
+      {/* 方法3: 使用style属性完全自定义 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        style={{
+          background: "linear-gradient(45deg, #FF6B6B, #4ECDC4)",
+          border: "none",
+          color: "white",
+          borderRadius: "20px",
+        }}
+      >
+        渐变按钮
+      </UploadButton>
+
+      {/* 方法4: 深色主题 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        backgroundColor='#1F2937'
+        color='#F9FAFB'
+        style={{ borderRadius: "8px" }}
+      >
+        深色按钮
+      </UploadButton>
+    </div>
+  );
+}
+```
+
+### 自定义按钮图标
+
+```tsx
+import { UploadButton } from "react-progress-uploader";
+
+function CustomIconUpload() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* 默认云图标 */}
+      <UploadButton uploadFunction={axiosUploadFunction}>
+        默认云图标
+      </UploadButton>
+
+      {/* 隐藏图标 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        showIcon={false}
+      >
+        纯文字按钮
+      </UploadButton>
+
+      {/* Emoji图标 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='📤'
+      >
+        发送文件
+      </UploadButton>
+
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='🖼️'
+      >
+        上传图片
+      </UploadButton>
+
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='📄'
+      >
+        上传文档
+      </UploadButton>
+
+      {/* 自定义SVG图标 */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon={
+          <svg
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+          >
+            <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+            <polyline points='7,10 12,15 17,10' />
+            <line
+              x1='12'
+              y1='15'
+              x2='12'
+              y2='3'
+            />
+          </svg>
+        }
+      >
+        自定义图标
+      </UploadButton>
+    </div>
+  );
+}
+```
+
+### 自定义上传控制
+
+```tsx
+import { Uploader } from "react-progress-uploader";
+import { useState } from "react";
+
+function CustomControlUpload() {
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  return (
+    <div>
+      {/* 只作为文件选择区域，隐藏内置按钮 */}
+      <Uploader
+        uploadFunction={axiosUploadFunction}
+        multiple={true}
+        acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+        hideActions={true} // 隐藏内置按钮
+        onFileSelect={(files) => {
+          setSelectedFiles(Array.from(files));
+        }}
+      />
+
+      {/* 自定义上传控制 */}
+      {selectedFiles.length > 0 && (
+        <div>
+          <p>已选择 {selectedFiles.length} 个文件</p>
+          <button
+            onClick={() => {
+              /* 自定义上传逻辑 */
+            }}
+          >
+            开始上传
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
 ## 📝 核心 API
 
 ### 主要组件
@@ -143,6 +325,23 @@ function DragDropUpload() {
 | `maxConcurrent`     | `number`           | `3`         | 最大并发上传数     |
 | `onUpload`          | `UploadCallback`   | `undefined` | 完成回调           |
 | `onUploadProgress`  | `ProgressCallback` | `undefined` | 进度回调           |
+
+### UploadButton 组件特有 Props
+
+| 属性              | 类型              | 默认值      | 描述                                                  |
+| ----------------- | ----------------- | ----------- | ----------------------------------------------------- |
+| `variant`         | `string`          | `primary`   | 按钮变体：`primary`、`secondary`、`outline`、`custom` |
+| `color`           | `string`          | `undefined` | 自定义文字颜色                                        |
+| `backgroundColor` | `string`          | `undefined` | 自定义背景颜色                                        |
+| `borderColor`     | `string`          | `undefined` | 自定义边框颜色（outline 变体用）                      |
+| `showIcon`        | `boolean`         | `true`      | 是否显示图标                                          |
+| `icon`            | `React.ReactNode` | `undefined` | 自定义图标（覆盖默认云图标）                          |
+
+### Uploader 组件特有 Props
+
+| 属性          | 类型      | 默认值  | 描述                 |
+| ------------- | --------- | ------- | -------------------- |
+| `hideActions` | `boolean` | `false` | 是否隐藏上传按钮区域 |
 
 ### 上传函数类型
 

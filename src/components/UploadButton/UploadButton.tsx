@@ -8,8 +8,13 @@ interface UploadButtonProps {
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "custom";
   size?: "small" | "medium" | "large";
+  color?: string; // 自定义主色调
+  backgroundColor?: string; // 自定义背景色
+  borderColor?: string; // 自定义边框色（outline变体用）
+  showIcon?: boolean; // 是否显示图标
+  icon?: React.ReactNode; // 自定义图标
   onUpload?: (successfulFiles: File[], results?: UploadResult[]) => void;
   onUploadProgress?: (progress: UploadProgress[]) => void;
   multiple?: boolean;
@@ -27,6 +32,11 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
   style,
   variant = "primary",
   size = "medium",
+  color,
+  backgroundColor,
+  borderColor,
+  showIcon = true,
+  icon,
   onUpload,
   onUploadProgress,
   multiple = true,
@@ -62,17 +72,42 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
     }
   };
 
+  // 处理自定义颜色
+  const hasCustomColors =
+    color || backgroundColor || borderColor || variant === "custom";
+  const customStyle: React.CSSProperties = hasCustomColors
+    ? {
+        ...(backgroundColor && { backgroundColor }),
+        ...(color && { color }),
+        ...(borderColor && { borderColor }),
+        ...(variant === "outline" &&
+          borderColor && { borderWidth: "1px", borderStyle: "solid" }),
+        ...(style || {}),
+      }
+    : style || {};
+
+  // 选择变体类名
+  const effectiveVariant =
+    hasCustomColors && variant !== "custom" ? "custom" : variant;
+
   return (
     <>
       <button
-        className={`upload-button upload-button--${variant} upload-button--${size} ${className} ${
+        className={`upload-button upload-button--${effectiveVariant} upload-button--${size} ${className} ${
           disabled ? "upload-button--disabled" : ""
         }`}
-        style={style}
+        style={customStyle}
         onClick={openDialog}
         disabled={disabled}
       >
-        <DialogUploadIcon className='upload-button-icon uploader-icon-dialog-upload' />
+        {showIcon &&
+          (icon ? (
+            <span className='upload-button-icon upload-button-custom-icon'>
+              {icon}
+            </span>
+          ) : (
+            <DialogUploadIcon className='upload-button-icon uploader-icon-dialog-upload' />
+          ))}
         {children}
       </button>
 

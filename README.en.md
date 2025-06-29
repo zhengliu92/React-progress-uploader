@@ -9,6 +9,21 @@ A feature-complete, type-safe React file upload component library that supports 
 
 **[View Live Demo & Documentation](https://zhengliu92.github.io/React-progress-uploader/)**
 
+## 🔧 Recent Updates (v1.1.2)
+
+### Bug Fixes
+
+- ✅ **Fixed duplicate file list display** - Files no longer appear twice in DialogUploader
+- ✅ **Fixed duplicate upload buttons** - Removed duplicate "Start Upload" buttons in DialogUploader
+- ✅ **Improved Windows compatibility** - Use `rimraf` instead of `rm` command for better Windows support
+- ✅ **Fixed npm registry configuration** - Use official npm registry by default for better download speed
+
+### Technical Improvements
+
+- 🚀 **Added hideActions property** - Uploader component supports hiding button area for more flexible integration
+- 📦 **Optimized build process** - Improved build experience on Windows systems
+- 🔍 **Better type safety** - Enhanced TypeScript type definitions
+
 ## 📦 Installation
 
 ```bash
@@ -123,6 +138,173 @@ function DragDropUpload() {
 }
 ```
 
+### Custom Button Colors
+
+```tsx
+import { UploadButton } from "react-progress-uploader";
+
+function CustomColorUpload() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* Method 1: Using color properties */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        backgroundColor='#10B981' // Green background
+        color='white' // White text
+        variant='custom'
+      >
+        Green Button
+      </UploadButton>
+
+      {/* Method 2: Using outline variant + custom border color */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        variant='outline'
+        borderColor='#F59E0B' // Yellow border
+        color='#F59E0B' // Yellow text
+      >
+        Yellow Border Button
+      </UploadButton>
+
+      {/* Method 3: Using style property for complete customization */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        style={{
+          background: "linear-gradient(45deg, #FF6B6B, #4ECDC4)",
+          border: "none",
+          color: "white",
+          borderRadius: "20px",
+        }}
+      >
+        Gradient Button
+      </UploadButton>
+
+      {/* Method 4: Dark theme */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        backgroundColor='#1F2937'
+        color='#F9FAFB'
+        style={{ borderRadius: "8px" }}
+      >
+        Dark Button
+      </UploadButton>
+    </div>
+  );
+}
+```
+
+### Custom Button Icons
+
+```tsx
+import { UploadButton } from "react-progress-uploader";
+
+function CustomIconUpload() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* Default cloud icon */}
+      <UploadButton uploadFunction={axiosUploadFunction}>
+        Default Cloud Icon
+      </UploadButton>
+
+      {/* Hide icon */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        showIcon={false}
+      >
+        Text Only Button
+      </UploadButton>
+
+      {/* Emoji icons */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='📤'
+      >
+        Send Files
+      </UploadButton>
+
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='🖼️'
+      >
+        Upload Images
+      </UploadButton>
+
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon='📄'
+      >
+        Upload Documents
+      </UploadButton>
+
+      {/* Custom SVG icon */}
+      <UploadButton
+        uploadFunction={axiosUploadFunction}
+        icon={
+          <svg
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+          >
+            <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+            <polyline points='7,10 12,15 17,10' />
+            <line
+              x1='12'
+              y1='15'
+              x2='12'
+              y2='3'
+            />
+          </svg>
+        }
+      >
+        Custom Icon
+      </UploadButton>
+    </div>
+  );
+}
+```
+
+### Custom Upload Control
+
+```tsx
+import { Uploader } from "react-progress-uploader";
+import { useState } from "react";
+
+function CustomControlUpload() {
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  return (
+    <div>
+      {/* Use as file selection area only, hide built-in buttons */}
+      <Uploader
+        uploadFunction={axiosUploadFunction}
+        multiple={true}
+        acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+        hideActions={true} // Hide built-in buttons
+        onFileSelect={(files) => {
+          setSelectedFiles(Array.from(files));
+        }}
+      />
+
+      {/* Custom upload control */}
+      {selectedFiles.length > 0 && (
+        <div>
+          <p>{selectedFiles.length} files selected</p>
+          <button
+            onClick={() => {
+              /* Custom upload logic */
+            }}
+          >
+            Start Upload
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
 ## 📝 Core API
 
 ### Main Components
@@ -143,6 +325,23 @@ function DragDropUpload() {
 | `maxConcurrent`     | `number`           | `3`          | Maximum concurrent uploads |
 | `onUpload`          | `UploadCallback`   | `undefined`  | Completion callback        |
 | `onUploadProgress`  | `ProgressCallback` | `undefined`  | Progress callback          |
+
+### UploadButton Component Specific Props
+
+| Property          | Type              | Default     | Description                                                 |
+| ----------------- | ----------------- | ----------- | ----------------------------------------------------------- |
+| `variant`         | `string`          | `primary`   | Button variant: `primary`, `secondary`, `outline`, `custom` |
+| `color`           | `string`          | `undefined` | Custom text color                                           |
+| `backgroundColor` | `string`          | `undefined` | Custom background color                                     |
+| `borderColor`     | `string`          | `undefined` | Custom border color (for outline variant)                   |
+| `showIcon`        | `boolean`         | `true`      | Whether to show icon                                        |
+| `icon`            | `React.ReactNode` | `undefined` | Custom icon (overrides default cloud icon)                  |
+
+### Uploader Component Specific Props
+
+| Property      | Type      | Default | Description                        |
+| ------------- | --------- | ------- | ---------------------------------- |
+| `hideActions` | `boolean` | `false` | Whether to hide upload button area |
 
 ### Upload Function Type
 

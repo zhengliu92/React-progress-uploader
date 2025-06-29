@@ -37,6 +37,38 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+  color: inherit; /* 继承按钮的文字颜色 */
+}
+
+/* 确保SVG图标使用正确的颜色 */
+.upload-button-icon svg {
+  color: inherit;
+  stroke: currentColor;
+}
+
+/* 特定图标类的样式 */
+.uploader-icon-dialog-upload {
+  color: inherit;
+}
+
+.uploader-icon-dialog-upload svg {
+  stroke: currentColor;
+}
+
+/* 自定义图标容器的样式 */
+.upload-button-custom-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.upload-button-custom-icon svg {
+  width: inherit;
+  height: inherit;
+  color: inherit;
+  stroke: currentColor;
+  fill: currentColor;
 }
 
 /* 尺寸变体 */
@@ -69,6 +101,18 @@
 .upload-button--primary {
   background-color: #3b82f6;
   color: white;
+}
+
+.upload-button--custom {
+  /* 自定义颜色通过内联样式设置，这里只设置基础样式 */
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.upload-button--custom:hover:not(:disabled):not(.upload-button--disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .upload-button--primary:hover:not(:disabled):not(.upload-button--disabled) {
@@ -143,8 +187,8 @@
     width: 100%;
     justify-content: center;
   }
-  
+
   .upload-button--large {
     padding: 14px 20px;
   }
-} 
+}

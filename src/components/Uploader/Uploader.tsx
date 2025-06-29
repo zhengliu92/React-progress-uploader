@@ -23,6 +23,7 @@ interface UploaderProps {
   maxConcurrent?: number;
   maxFiles?: number;
   maxFileSize?: number;
+  hideActions?: boolean; // 是否隐藏按钮区域
 }
 
 export const Uploader = ({
@@ -35,6 +36,7 @@ export const Uploader = ({
   maxConcurrent = 3,
   maxFiles = 10,
   maxFileSize,
+  hideActions = false,
 }: UploaderProps) => {
   // 使用文件选择hook
   const { selectedFiles, selectionError, addFiles, removeFile, clearFiles } =
@@ -198,60 +200,62 @@ export const Uploader = ({
       )}
 
       {/* 上传按钮和状态 */}
-      <div className='uploader-actions'>
-        {isUploading ? (
-          <div className='uploader-uploading-info'>
-            {isCancelling ? (
-              <span className='uploader-cancelling-text'>正在取消...</span>
-            ) : (
-              <span className='uploader-uploading-text'>
-                {stats.uploading} 个文件上传中
+      {!hideActions && (
+        <div className='uploader-actions'>
+          {isUploading ? (
+            <div className='uploader-uploading-info'>
+              {isCancelling ? (
+                <span className='uploader-cancelling-text'>正在取消...</span>
+              ) : (
+                <span className='uploader-uploading-text'>
+                  {stats.uploading} 个文件上传中
+                </span>
+              )}
+              {!isCancelling && (
+                <button
+                  className='uploader-button uploader-button--cancel'
+                  onClick={cancelAllUploads}
+                >
+                  <CancelIcon className='uploader-icon-cancel' />
+                  停止上传
+                </button>
+              )}
+            </div>
+          ) : uploadProgress.length > 0 && stats.isAllCompleted ? (
+            <div className='uploader-completed-info'>
+              <span className='uploader-completed-text'>
+                上传完成: {stats.completed} 成功, {stats.failed} 失败,{" "}
+                {stats.cancelled} 取消
               </span>
-            )}
-            {!isCancelling && (
-              <button
-                className='uploader-button uploader-button--cancel'
-                onClick={cancelAllUploads}
-              >
-                <CancelIcon className='uploader-icon-cancel' />
-                停止上传
-              </button>
-            )}
-          </div>
-        ) : uploadProgress.length > 0 && stats.isAllCompleted ? (
-          <div className='uploader-completed-info'>
-            <span className='uploader-completed-text'>
-              上传完成: {stats.completed} 成功, {stats.failed} 失败,{" "}
-              {stats.cancelled} 取消
-            </span>
-            <button
-              className='uploader-button uploader-button--secondary'
-              onClick={handleClearFiles}
-            >
-              重新选择
-            </button>
-          </div>
-        ) : (
-          <div className='uploader-upload-actions'>
-            {selectedFiles.length > 0 && (
               <button
                 className='uploader-button uploader-button--secondary'
                 onClick={handleClearFiles}
               >
-                清空文件
+                重新选择
               </button>
-            )}
-            <button
-              className='uploader-button uploader-button--primary'
-              onClick={handleUpload}
-              disabled={selectedFiles.length === 0}
-            >
-              <UploadButtonIcon />
-              开始上传 ({selectedFiles.length})
-            </button>
-          </div>
-        )}
-      </div>
+            </div>
+          ) : (
+            <div className='uploader-upload-actions'>
+              {selectedFiles.length > 0 && (
+                <button
+                  className='uploader-button uploader-button--secondary'
+                  onClick={handleClearFiles}
+                >
+                  清空文件
+                </button>
+              )}
+              <button
+                className='uploader-button uploader-button--primary'
+                onClick={handleUpload}
+                disabled={selectedFiles.length === 0}
+              >
+                <UploadButtonIcon />
+                开始上传 ({selectedFiles.length})
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

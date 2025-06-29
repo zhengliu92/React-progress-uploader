@@ -23,11 +23,10 @@ export const DialogCancelledIcon: React.FC<IconProps> = ({
         fill={fill}
       />
       <path
-        d='M15 9l-6 6M9 9l6 6'
+        d='M8 12h8'
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap='round'
-        strokeLinejoin='round'
       />
     </IconBase>
   );

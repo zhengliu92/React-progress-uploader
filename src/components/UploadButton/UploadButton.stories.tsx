@@ -148,11 +148,47 @@ UploadButton 采用"按钮触发+弹窗处理"的设计模式，为用户提供�
     },
     variant: {
       control: "select",
-      options: ["primary", "secondary", "outline"],
+      options: ["primary", "secondary", "outline", "custom"],
       description: "按钮样式变体",
       table: {
         defaultValue: { summary: '"primary"' },
-        type: { summary: '"primary" | "secondary" | "outline"' },
+        type: { summary: '"primary" | "secondary" | "outline" | "custom"' },
+      },
+    },
+    color: {
+      control: "color",
+      description: "自定义文字颜色",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    backgroundColor: {
+      control: "color",
+      description: "自定义背景颜色",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    borderColor: {
+      control: "color",
+      description: "自定义边框颜色（outline变体用）",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    showIcon: {
+      control: "boolean",
+      description: "是否显示图标",
+      table: {
+        defaultValue: { summary: "true" },
+        type: { summary: "boolean" },
+      },
+    },
+    icon: {
+      control: "text",
+      description: "自定义图标（React元素）",
+      table: {
+        type: { summary: "React.ReactNode" },
       },
     },
     size: {
@@ -350,6 +386,206 @@ export const UnreliableUpload: Story = {
   },
 };
 
+// 绿色自定义颜色示例
+export const GreenCustomButton: Story = {
+  args: {
+    children: "绿色上传按钮",
+    backgroundColor: "#10B981",
+    color: "white",
+    variant: "custom",
+    uploadFunction: mockUploadFunctions.reliable,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "展示使用backgroundColor和color属性创建绿色主题按钮的简单示例。",
+      },
+    },
+  },
+};
+
+// 橙色边框自定义示例
+export const OrangeOutlineButton: Story = {
+  args: {
+    children: "橙色边框按钮",
+    variant: "outline",
+    borderColor: "#EA580C",
+    color: "#EA580C",
+    uploadFunction: mockUploadFunctions.reliable,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "展示使用borderColor和color属性创建橙色边框按钮的outline变体示例。",
+      },
+    },
+  },
+};
+
+// 隐藏图标的按钮
+export const NoIcon: Story = {
+  args: {
+    children: "纯文字按钮",
+    showIcon: false,
+    uploadFunction: mockUploadFunctions.reliable,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "展示隐藏图标的纯文字上传按钮，通过设置showIcon=false实现。",
+      },
+    },
+  },
+};
+
+// 自定义图标示例
+export const CustomIcon: Story = {
+  args: {
+    children: "自定义图标",
+    icon: "📁", // 使用emoji作为图标
+    uploadFunction: mockUploadFunctions.reliable,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "展示使用自定义图标的按钮，这里使用emoji作为示例。可以传入任何React元素。",
+      },
+    },
+  },
+};
+
+// 图标选项展示
+export const IconOptions: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: "16px",
+        alignItems: "start",
+      }}
+    >
+      {/* 默认云图标 */}
+      <UploadButton uploadFunction={mockUploadFunctions.reliable}>
+        默认云图标
+      </UploadButton>
+
+      {/* 隐藏图标 */}
+      <UploadButton
+        showIcon={false}
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        纯文字按钮
+      </UploadButton>
+
+      {/* Emoji图标 */}
+      <UploadButton
+        icon='📤'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        发送图标
+      </UploadButton>
+
+      <UploadButton
+        icon='📎'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        附件图标
+      </UploadButton>
+
+      <UploadButton
+        icon='🖼️'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        图片图标
+      </UploadButton>
+
+      <UploadButton
+        icon='📄'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        文档图标
+      </UploadButton>
+
+      {/* 自定义SVG图标 */}
+      <UploadButton
+        icon={
+          <svg
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+          >
+            <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+            <polyline points='7,10 12,15 17,10' />
+            <line
+              x1='12'
+              y1='15'
+              x2='12'
+              y2='3'
+            />
+          </svg>
+        }
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        下载图标
+      </UploadButton>
+
+      <UploadButton
+        icon={
+          <svg
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+          >
+            <polygon points='13,2 3,14 12,14 11,22 21,10 12,10' />
+          </svg>
+        }
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        闪电图标
+      </UploadButton>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `
+展示UploadButton支持的各种图标选项：
+
+### 图标类型
+
+- **默认云图标**：不设置任何图标属性时的默认样式
+- **隐藏图标**：设置 \`showIcon={false}\` 创建纯文字按钮
+- **Emoji图标**：使用emoji字符作为图标，简单易用
+- **自定义SVG**：传入SVG元素实现自定义矢量图标
+
+### 使用场景
+
+- **专题上传**：使用相关的emoji或图标（如图片、文档）
+- **品牌定制**：使用自定义SVG图标匹配品牌设计
+- **简约风格**：隐藏图标实现纯文字按钮
+- **功能区分**：不同图标表示不同的上传类型
+
+### 技术特点
+
+- 图标自动继承按钮的颜色
+- SVG图标支持currentColor，适配主题
+- 图标尺寸自动适配按钮大小
+- 完全的TypeScript类型支持
+        `,
+      },
+    },
+  },
+};
+
 // 样式变体展示
 export const Variants: Story = {
   render: () => (
@@ -379,13 +615,21 @@ export const Variants: Story = {
       >
         Outline
       </UploadButton>
+      <UploadButton
+        variant='custom'
+        backgroundColor='#10B981'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        Custom
+      </UploadButton>
     </div>
   ),
   parameters: {
     docs: {
       description: {
         story:
-          "展示不同样式变体的上传按钮：primary（主要）、secondary（次要）、outline（轮廓）。",
+          "展示不同样式变体的上传按钮：primary（主要）、secondary（次要）、outline（轮廓）、custom（自定义）。",
       },
     },
   },
@@ -480,12 +724,22 @@ export const DisabledVariants: Story = {
       >
         Outline Disabled
       </UploadButton>
+      <UploadButton
+        variant='custom'
+        backgroundColor='#10B981'
+        color='white'
+        disabled
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        Custom Disabled
+      </UploadButton>
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: "展示不同变体的禁用状态按钮，演示禁用样式的一致性。",
+        story:
+          "展示不同变体的禁用状态按钮，包括自定义颜色变体，演示禁用样式的一致性。",
       },
     },
   },
@@ -775,6 +1029,123 @@ export const InteractiveDemo: Story = {
 2. 观察慢速上传的取消功能
 3. 测试不稳定上传的错误处理
 4. 对比不同按钮样式和交互
+        `,
+      },
+    },
+  },
+};
+
+// 自定义颜色示例
+export const CustomColors: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gap: "16px",
+        alignItems: "start",
+      }}
+    >
+      {/* 成功主题 */}
+      <UploadButton
+        backgroundColor='#10B981'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🟢 成功主题
+      </UploadButton>
+
+      {/* 警告主题 */}
+      <UploadButton
+        backgroundColor='#F59E0B'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🟡 警告主题
+      </UploadButton>
+
+      {/* 危险主题 */}
+      <UploadButton
+        backgroundColor='#EF4444'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🔴 危险主题
+      </UploadButton>
+
+      {/* 深色主题 */}
+      <UploadButton
+        backgroundColor='#1F2937'
+        color='#F9FAFB'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        ⚫ 深色主题
+      </UploadButton>
+
+      {/* 紫色主题 */}
+      <UploadButton
+        backgroundColor='#8B5CF6'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🟣 紫色主题
+      </UploadButton>
+
+      {/* 橙色边框（outline变体） */}
+      <UploadButton
+        variant='outline'
+        borderColor='#EA580C'
+        color='#EA580C'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🟠 橙色边框
+      </UploadButton>
+
+      {/* 蓝色边框（outline变体） */}
+      <UploadButton
+        variant='outline'
+        borderColor='#2563EB'
+        color='#2563EB'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🔵 蓝色边框
+      </UploadButton>
+
+      {/* 品牌色示例 */}
+      <UploadButton
+        backgroundColor='#6366F1'
+        color='white'
+        uploadFunction={mockUploadFunctions.reliable}
+        style={{ borderRadius: "12px" }}
+      >
+        💎 品牌色
+      </UploadButton>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: `
+展示使用新颜色属性自定义按钮外观的各种方案：
+
+### 颜色主题
+
+- **成功主题**：绿色背景，适用于确认操作
+- **警告主题**：黄色背景，适用于注意提醒
+- **危险主题**：红色背景，适用于危险操作
+- **深色主题**：深灰背景，适用于深色界面
+- **紫色主题**：紫色背景，适用于创意设计
+- **品牌色**：自定义品牌色彩方案
+
+### Outline变体
+
+- **橙色边框**：使用borderColor和color属性
+- **蓝色边框**：outline变体的边框自定义
+
+### 使用方法
+
+使用 \`backgroundColor\`、\`color\` 和 \`borderColor\` 属性来快速自定义按钮颜色，
+比使用 \`style\` 属性更加简洁和语义化。
         `,
       },
     },

@@ -195,7 +195,7 @@ export const UnifiedStatusIcon: React.FC<StatusIconProps> = ({
               fill={finalFill}
             />
             <path
-              d='M8 8h8'
+              d='M8 12h8'
               stroke={finalStroke}
               strokeWidth={strokeWidth}
               strokeLinecap='round'
