@@ -1,3 +1,45 @@
+/* 上传器容器 */
+.uploader-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 错误提示 */
+.uploader-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #dc2626;
+  font-size: 14px;
+  position: relative;
+}
+
+.uploader-error-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.uploader-error-close:hover {
+  background-color: rgba(220, 38, 38, 0.1);
+}
+
+/* 拖拽区域 */
 .uploader-dropzone {
   border: 2px dashed #d1d5db;
   border-radius: 12px;
@@ -10,34 +52,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
 
-  &:hover {
-    border-color: #3b82f6;
-    background-color: #f0f9ff;
+.uploader-dropzone:hover {
+  border-color: #3b82f6;
+  background-color: #f0f9ff;
+}
 
-    .uploader-icon {
-      color: #3b82f6;
-    }
+.uploader-dropzone:hover .uploader-icon {
+  color: #3b82f6;
+}
 
-    .uploader-text {
-      color: #3b82f6;
-    }
-  }
- 
-  &.drag-active {
-    border-color: #10b981;
-    background-color: #ecfdf5;
-    border-style: solid;
-    transform: scale(1.02);
+.uploader-dropzone:hover .uploader-text {
+  color: #3b82f6;
+}
 
-    .uploader-icon {
-      color: #10b981;
-    }
+.uploader-dropzone.drag-active {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+  border-style: solid;
+  transform: scale(1.02);
+}
 
-    .uploader-text {
-      color: #10b981;
-    }
-  }
+.uploader-dropzone.drag-active .uploader-icon {
+  color: #10b981;
+}
+
+.uploader-dropzone.drag-active .uploader-text {
+  color: #10b981;
+}
+
+.uploader-dropzone.uploading {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.uploader-dropzone.has-error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.uploader-dropzone.has-error .uploader-icon {
+  color: #ef4444;
+}
+
+.uploader-dropzone.has-error .uploader-text {
+  color: #ef4444;
 }
 
 .uploader-content {
@@ -48,11 +108,50 @@
   pointer-events: none;
 }
 
+/* 图标样式 */
 .uploader-icon {
   width: 48px;
   height: 48px;
   color: #6b7280;
   transition: color 0.3s ease;
+}
+
+.uploader-icon-error {
+  width: 20px;
+  height: 20px;
+}
+
+.uploader-icon-close {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+.uploader-icon-cancel {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+.uploader-icon-upload-button {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+.uploader-icon-success {
+  width: 20px;
+  height: 20px;
+}
+
+.uploader-icon-loading {
+  width: 20px;
+  height: 20px;
+}
+
+.uploader-icon-pending {
+  width: 20px;
+  height: 20px;
 }
 
 .uploader-text {
@@ -67,10 +166,457 @@
   font-size: 14px;
   color: #6b7280;
   margin: 0;
+  text-align: center;
+}
+
+.uploader-size-limit {
+  color: #f59e0b;
+  font-weight: 500;
 }
 
 .uploader-input {
   display: none;
+}
+
+/* 已选择的文件列表 */
+.uploader-selected-files {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.uploader-selected-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.uploader-selected-files h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.uploader-clear-btn {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uploader-clear-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.uploader-selected-files ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.uploader-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.uploader-file-item:last-child {
+  border-bottom: none;
+}
+
+.uploader-file-item:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 0 -12px;
+}
+
+.uploader-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.uploader-file-name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.uploader-file-size {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.uploader-remove-file {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploader-remove-file:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* 上传进度 */
+.uploader-progress {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.uploader-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.uploader-progress-header-info {
+  flex: 1;
+}
+
+.uploader-progress-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.uploader-progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.uploader-progress-stats {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.uploader-progress-percentage {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.uploader-cancel-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uploader-cancel-all-btn:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+.uploader-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.uploader-progress-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.uploader-progress-item--uploading {
+  border-color: #3b82f6;
+}
+
+.uploader-progress-item--completed {
+  border-color: #10b981;
+}
+
+.uploader-progress-item--error {
+  border-color: #ef4444;
+}
+
+.uploader-progress-item--cancelled {
+  border-color: #6b7280;
+}
+
+.uploader-progress-item--pending {
+  border-color: #9ca3af;
+}
+
+.uploader-progress-main {
+  margin-bottom: 8px;
+}
+
+.uploader-progress-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.uploader-progress-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.uploader-progress-name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.uploader-progress-actions {
+  flex-shrink: 0;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.uploader-progress-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.uploader-progress-status {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.uploader-progress-percent {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+/* 状态图标 */
+.uploader-status-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploader-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 进度条 */
+.uploader-progress-bar {
+  height: 6px;
+  background-color: #f3f4f6;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.uploader-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.uploader-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 总体进度条 */
+.uploader-overall-progress {
+  margin-top: 4px;
+}
+
+.uploader-overall-progress-bar {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.uploader-overall-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.uploader-overall-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+/* 按钮和操作区域 */
+.uploader-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uploader-uploading-info,
+.uploader-completed-info,
+.uploader-upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.uploader-upload-actions {
+  justify-content: flex-end;
+}
+
+.uploader-cancelling-text {
+  color: #f59e0b;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.uploader-uploading-text {
+  color: #3b82f6;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.uploader-completed-text {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 按钮样式 */
+.uploader-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+}
+
+.uploader-button--secondary {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.uploader-button--secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.uploader-button--secondary:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.uploader-button--primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.uploader-button--primary:hover {
+  background-color: #2563eb;
+}
+
+.uploader-button--primary:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.uploader-button--cancel {
+  background-color: #ef4444;
+  color: white;
+  border: 1px solid #dc2626;
+}
+
+.uploader-button--cancel:hover {
+  background-color: #dc2626;
+  border-color: #b91c1c;
 }
 
 /* 响应式设计 */
@@ -79,18 +625,55 @@
     padding: 24px 16px;
     min-height: 160px;
   }
-  
+
   .uploader-icon {
     width: 36px;
     height: 36px;
   }
-  
+
   .uploader-text {
     font-size: 16px;
   }
-  
+
   .uploader-subtext {
     font-size: 13px;
   }
+
+  .uploader-progress-header,
+  .uploader-uploading-info,
+  .uploader-completed-info,
+  .uploader-upload-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .uploader-progress-summary {
+    justify-content: space-between;
+  }
+
+  .uploader-progress-name-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .uploader-progress-actions {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .uploader-file-item:hover {
+    margin: 0;
+    padding: 12px 0;
+    background-color: transparent;
+  }
+
+  .uploader-progress-item {
+    padding: 8px;
+  }
+
+  .uploader-button {
+    justify-content: center;
+  }
 }
-  

@@ -12,66 +12,27 @@
 ## 📦 安装
 
 ```bash
-npm install react-progress-uploader
+npm install react-progress-uploader axios
 ```
 
-## 🚀 最佳实践
+## 🚀 快速开始 - Axios 上传示例
 
-### 1. 基础上传（推荐）
-
-```tsx
-import React from 'react';
-import { UploadButton } from 'react-progress-uploader';
-
-function BasicUpload() {
-  const uploadFunction = async ({ file, onProgress, signal }) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-      signal, // 支持取消
-    });
-    
-    return {
-      success: response.ok,
-      data: await response.json(),
-    };
-  };
-
-  return (
-    <UploadButton 
-      uploadFunction={uploadFunction}
-      multiple={true}
-      acceptedFileTypes={['.jpg', '.png', '.pdf']}
-      maxFiles={5}
-      maxFileSize={10 * 1024 * 1024} // 10MB
-      onUpload={(files, results) => {
-        console.log('上传完成:', files);
-      }}
-    >
-      选择文件上传
-    </UploadButton>
-  );
-}
-```
-
-### 2. 使用 Axios（推荐生产环境）
+### 基础用法
 
 ```tsx
-import axios from 'axios';
-import { UploadButton } from 'react-progress-uploader';
+import React from "react";
+import axios from "axios";
+import { UploadButton } from "react-progress-uploader";
 
-function AxiosUpload() {
+function FileUpload() {
   const axiosUploadFunction = async ({ file, onProgress, signal }) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        signal,
+      const response = await axios.post("/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        signal, // 支持取消上传
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
@@ -84,10 +45,10 @@ function AxiosUpload() {
 
       return { success: true, data: response.data };
     } catch (error) {
-      if (axios.isCancel(error)) throw error;
-      return { 
-        success: false, 
-        error: error.response?.data?.message || '上传失败' 
+      if (axios.isCancel(error)) throw error; // 处理取消
+      return {
+        success: false,
+        error: error.response?.data?.message || "上传失败",
       };
     }
   };
@@ -96,20 +57,27 @@ function AxiosUpload() {
     <UploadButton
       uploadFunction={axiosUploadFunction}
       multiple={true}
-      acceptedFileTypes={['.jpg', '.png', '.pdf']}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
       maxFiles={5}
-      maxFileSize={10 * 1024 * 1024}
+      maxFileSize={10 * 1024 * 1024} // 10MB
+      onUpload={(files, results) => {
+        console.log("上传成功的文件:", files);
+        console.log("上传结果:", results);
+      }}
+      onUploadProgress={(progress) => {
+        console.log("上传进度:", progress);
+      }}
     >
-      上传文件
+      选择文件上传
     </UploadButton>
   );
 }
 ```
 
-### 3. 对话框上传
+### 对话框上传
 
 ```tsx
-import { DialogUploader } from 'react-progress-uploader';
+import { DialogUploader } from "react-progress-uploader";
 
 function DialogUpload() {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,50 +88,61 @@ function DialogUpload() {
       <DialogUploader
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        uploadFunction={uploadFunction}
+        uploadFunction={axiosUploadFunction}
         multiple={true}
         maxFiles={10}
+        acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+        maxFileSize={10 * 1024 * 1024}
+        onUpload={(files, results) => {
+          console.log("对话框上传完成:", files);
+        }}
       />
     </>
   );
 }
 ```
 
-### 4. 仅文件选择（无上传）
+### 区域上传
 
 ```tsx
-function FileSelector() {
-  const handleFileSelection = (files) => {
-    console.log('选择的文件:', files);
-    // 处理文件逻辑
-  };
+import { Uploader } from "react-progress-uploader";
 
+function DragDropUpload() {
   return (
-    <UploadButton
-      onUpload={handleFileSelection}
+    <Uploader
+      uploadFunction={axiosUploadFunction}
       multiple={true}
-      acceptedFileTypes={['.jpg', '.png']}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
       maxFiles={5}
-    >
-      选择文件
-    </UploadButton>
+      maxFileSize={10 * 1024 * 1024}
+      onUpload={(files, results) => {
+        console.log("拖拽上传完成:", files);
+      }}
+    />
   );
 }
 ```
 
 ## 📝 核心 API
 
-### UploadButton Props
+### 主要组件
 
-| 属性 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `uploadFunction` | `UploadFunction` | `undefined` | 上传函数（可选） |
-| `multiple` | `boolean` | `true` | 多文件支持 |
-| `acceptedFileTypes` | `string[]` | `undefined` | 文件类型限制 |
-| `maxFiles` | `number` | `10` | 最大文件数 |
-| `maxFileSize` | `number` | `undefined` | 文件大小限制(字节) |
-| `onUpload` | `UploadCallback` | `undefined` | 完成回调 |
-| `onUploadProgress` | `ProgressCallback` | `undefined` | 进度回调 |
+- `UploadButton` - 按钮式上传组件
+- `DialogUploader` - 对话框上传组件
+- `Uploader` - 拖拽区域上传组件
+
+### 通用 Props
+
+| 属性                | 类型               | 默认值      | 描述               |
+| ------------------- | ------------------ | ----------- | ------------------ |
+| `uploadFunction`    | `UploadFunction`   | **必需**    | Axios 上传函数     |
+| `multiple`          | `boolean`          | `true`      | 多文件支持         |
+| `acceptedFileTypes` | `string[]`         | `undefined` | 文件类型限制       |
+| `maxFiles`          | `number`           | `10`        | 最大文件数         |
+| `maxFileSize`       | `number`           | `undefined` | 文件大小限制(字节) |
+| `maxConcurrent`     | `number`           | `3`         | 最大并发上传数     |
+| `onUpload`          | `UploadCallback`   | `undefined` | 完成回调           |
+| `onUploadProgress`  | `ProgressCallback` | `undefined` | 进度回调           |
 
 ### 上传函数类型
 
@@ -179,17 +158,16 @@ type UploadFunction = (options: {
 }>;
 ```
 
-## 🎯 配置建议
+## 🎯 推荐配置
 
 ```tsx
-// 推荐配置
 <UploadButton
-  uploadFunction={uploadFunction}
+  uploadFunction={axiosUploadFunction}
   multiple={true}
-  acceptedFileTypes={['.jpg', '.png', '.pdf']} // 明确文件类型
-  maxFiles={5}                                  // 合理的数量限制
-  maxFileSize={10 * 1024 * 1024}              // 10MB 大小限制
-  maxConcurrent={3}                            // 并发上传数
+  acceptedFileTypes={[".jpg", ".png", ".pdf"]} // 明确文件类型
+  maxFiles={5} // 合理的数量限制
+  maxFileSize={10 * 1024 * 1024} // 10MB 大小限制
+  maxConcurrent={3} // 3个并发上传
 />
 ```
 

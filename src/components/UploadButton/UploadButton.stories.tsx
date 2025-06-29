@@ -1,6 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { UploadButton } from "./UploadButton";
 import type { Meta, StoryObj } from "@storybook/react";
+import {
+  mockUploadFunctions,
+  fileTypeConfigs,
+  fileSizeLimits,
+  commonParameters,
+  StoryLogger,
+  formatFileSize,
+} from "../../stories/story-utils";
 
 interface UploadProgress {
   fileName: string;
@@ -97,7 +105,7 @@ const meta: Meta<typeof UploadButton> = {
   title: "Components/UploadButton",
   component: UploadButton,
   parameters: {
-    layout: "centered",
+    ...commonParameters,
     docs: {
       description: {
         component: `
@@ -105,12 +113,13 @@ UploadButton 是一个功能完整的文件上传按钮组件。
 
 ## 主要特性
 
-- **真实上传**：必须提供 uploadFunction 来处理文件上传
+- **即开即用**：点击按钮即可打开上传对话框
 - **多种样式**：支持 primary、secondary、outline 三种样式
 - **多尺寸支持**：small、medium、large 三种尺寸
 - **文件过滤**：支持文件类型和大小限制
 - **进度显示**：内置弹窗显示上传进度
 - **并发控制**：可配置最大并发上传数量
+- **状态管理**：完整的上传流程控制
 
 ## 使用场景
 
@@ -118,6 +127,11 @@ UploadButton 是一个功能完整的文件上传按钮组件。
 - 表单中的文件上传字段
 - 快速文件上传需求
 - 需要自定义样式的上传按钮
+- 模态框式的上传体验
+
+## 设计理念
+
+UploadButton 采用"按钮触发+弹窗处理"的设计模式，为用户提供专注的上传体验。
         `,
       },
     },
@@ -127,51 +141,101 @@ UploadButton 是一个功能完整的文件上传按钮组件。
     children: {
       control: "text",
       description: "按钮文本内容",
+      table: {
+        defaultValue: { summary: '"上传文件"' },
+        type: { summary: "React.ReactNode" },
+      },
     },
     variant: {
       control: "select",
       options: ["primary", "secondary", "outline"],
       description: "按钮样式变体",
+      table: {
+        defaultValue: { summary: '"primary"' },
+        type: { summary: '"primary" | "secondary" | "outline"' },
+      },
     },
     size: {
       control: "select",
       options: ["small", "medium", "large"],
       description: "按钮尺寸",
+      table: {
+        defaultValue: { summary: '"medium"' },
+        type: { summary: '"small" | "medium" | "large"' },
+      },
+    },
+    className: {
+      control: "text",
+      description: "自定义CSS类名",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    uploadFunction: {
+      description: "必需的上传函数，处理文件上传逻辑",
+      table: {
+        type: { summary: "(options: UploadOptions) => Promise<UploadResult>" },
+      },
     },
     multiple: {
       control: "boolean",
       description: "是否支持多文件选择",
+      table: {
+        defaultValue: { summary: "false" },
+        type: { summary: "boolean" },
+      },
     },
     acceptedFileTypes: {
       control: "object",
-      description: "支持的文件类型数组",
-    },
-    maxConcurrent: {
-      control: "number",
-      description: "最大并发上传数量",
+      description: '允许的文件类型数组（例如：[".jpg", ".png", ".pdf"]）',
+      table: {
+        type: { summary: "string[]" },
+      },
     },
     maxFiles: {
-      control: "number",
+      control: { type: "number", min: 1, max: 50 },
       description: "最大文件数量限制",
+      table: {
+        defaultValue: { summary: "10" },
+        type: { summary: "number" },
+      },
     },
     maxFileSize: {
       control: "number",
       description: "单个文件最大大小（字节）",
+      table: {
+        type: { summary: "number" },
+      },
+    },
+    maxConcurrent: {
+      control: { type: "number", min: 1, max: 10 },
+      description: "最大并发上传数量",
+      table: {
+        defaultValue: { summary: "3" },
+        type: { summary: "number" },
+      },
     },
     disabled: {
       control: "boolean",
-      description: "是否禁用按钮",
-    },
-    uploadFunction: {
-      description: "必需的上传函数，处理文件上传逻辑",
+      description: "是否禁用组件",
+      table: {
+        defaultValue: { summary: "false" },
+        type: { summary: "boolean" },
+      },
     },
     onUpload: {
       action: "onUpload",
       description: "文件上传完成回调",
+      table: {
+        type: { summary: "(files: File[], results?: UploadResult[]) => void" },
+      },
     },
     onUploadProgress: {
       action: "onUploadProgress",
       description: "上传进度回调",
+      table: {
+        type: { summary: "(progress: UploadProgress[]) => void" },
+      },
     },
   },
 };
@@ -183,12 +247,13 @@ type Story = StoryObj<typeof UploadButton>;
 export const Default: Story = {
   args: {
     children: "上传文件",
-    uploadFunction: mockUploadFunction,
+    uploadFunction: mockUploadFunctions.standard,
   },
   parameters: {
     docs: {
       description: {
-        story: "默认的上传按钮，支持多文件上传并带有进度显示。",
+        story:
+          "默认的上传按钮，支持多文件上传并带有进度显示。使用标准上传速度和10%失败率进行演示。",
       },
     },
   },
@@ -198,16 +263,12 @@ export const SingleFile: Story = {
   args: {
     children: "选择单个文件",
     multiple: false,
-    uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results?: UploadResult[]) => {
-      console.log("上传成功的文件:", files);
-      console.log("上传结果:", results);
-    },
+    uploadFunction: mockUploadFunctions.reliable,
   },
   parameters: {
     docs: {
       description: {
-        story: "仅支持单文件上传的按钮。",
+        story: "仅支持单文件上传的按钮，使用可靠的上传函数（0%失败率）。",
       },
     },
   },
@@ -216,19 +277,18 @@ export const SingleFile: Story = {
 export const ImageUpload: Story = {
   args: {
     children: "上传图片",
-    acceptedFileTypes: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+    acceptedFileTypes: fileTypeConfigs.images,
     multiple: true,
     variant: "primary",
-    uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results?: UploadResult[]) => {
-      console.log("上传成功的图片:", files);
-      console.log("上传结果:", results);
-    },
+    uploadFunction: mockUploadFunctions.fast,
+    maxFiles: 10,
+    maxFileSize: fileSizeLimits.large,
   },
   parameters: {
     docs: {
       description: {
-        story: "专门用于图片上传的按钮，仅接受图片格式。",
+        story:
+          "专门用于图片上传的按钮，仅接受图片格式，使用快速上传函数。支持最多10个文件，单个文件最大10MB。",
       },
     },
   },
@@ -237,19 +297,18 @@ export const ImageUpload: Story = {
 export const DocumentUpload: Story = {
   args: {
     children: "上传文档",
-    acceptedFileTypes: [".pdf", ".doc", ".docx", ".txt", ".rtf"],
+    acceptedFileTypes: fileTypeConfigs.documents,
     multiple: true,
     variant: "secondary",
-    uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results?: UploadResult[]) => {
-      console.log("上传成功的文档:", files);
-      console.log("上传结果:", results);
-    },
+    uploadFunction: mockUploadFunctions.standard,
+    maxFiles: 5,
+    maxFileSize: fileSizeLimits.medium,
   },
   parameters: {
     docs: {
       description: {
-        story: "专门用于文档上传的按钮，仅接受文档格式。",
+        story:
+          "专门用于文档上传的按钮，仅接受文档格式（PDF、DOC、DOCX、TXT、RTF、ODT），最多5个文件，单个文件最大5MB。",
       },
     },
   },
@@ -258,29 +317,66 @@ export const DocumentUpload: Story = {
 export const SlowUpload: Story = {
   args: {
     children: "慢速上传 (测试取消)",
-    uploadFunction: slowUploadFunction,
+    uploadFunction: mockUploadFunctions.slow,
     multiple: true,
     variant: "outline",
+    maxConcurrent: 1,
   },
   parameters: {
     docs: {
       description: {
-        story: "慢速上传按钮，用于测试取消上传功能。",
+        story:
+          "慢速上传按钮，串行上传（并发数为1），用于测试取消上传功能和观察进度变化。",
       },
     },
   },
 };
 
+export const UnreliableUpload: Story = {
+  args: {
+    children: "不稳定网络上传",
+    uploadFunction: mockUploadFunctions.unreliable,
+    multiple: true,
+    variant: "primary",
+    maxConcurrent: 2,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "模拟不稳定网络环境的上传（30%失败率），用于测试错误处理和用户体验。",
+      },
+    },
+  },
+};
+
+// 样式变体展示
 export const Variants: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-      <UploadButton variant="primary" uploadFunction={mockUploadFunction}>
+    <div
+      style={{
+        display: "flex",
+        gap: "16px",
+        flexWrap: "wrap",
+        alignItems: "center",
+      }}
+    >
+      <UploadButton
+        variant='primary'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Primary
       </UploadButton>
-      <UploadButton variant="secondary" uploadFunction={mockUploadFunction}>
+      <UploadButton
+        variant='secondary'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Secondary
       </UploadButton>
-      <UploadButton variant="outline" uploadFunction={mockUploadFunction}>
+      <UploadButton
+        variant='outline'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Outline
       </UploadButton>
     </div>
@@ -288,12 +384,14 @@ export const Variants: Story = {
   parameters: {
     docs: {
       description: {
-        story: "不同样式变体的上传按钮。",
+        story:
+          "展示不同样式变体的上传按钮：primary（主要）、secondary（次要）、outline（轮廓）。",
       },
     },
   },
 };
 
+// 尺寸变体展示
 export const Sizes: Story = {
   render: () => (
     <div
@@ -304,13 +402,22 @@ export const Sizes: Story = {
         flexWrap: "wrap",
       }}
     >
-      <UploadButton size="small" uploadFunction={mockUploadFunction}>
+      <UploadButton
+        size='small'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Small
       </UploadButton>
-      <UploadButton size="medium" uploadFunction={mockUploadFunction}>
+      <UploadButton
+        size='medium'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Medium
       </UploadButton>
-      <UploadButton size="large" uploadFunction={mockUploadFunction}>
+      <UploadButton
+        size='large'
+        uploadFunction={mockUploadFunctions.reliable}
+      >
         Large
       </UploadButton>
     </div>
@@ -318,48 +425,58 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       description: {
-        story: "不同尺寸的上传按钮。",
+        story:
+          "展示不同尺寸的上传按钮：small（小）、medium（中）、large（大）。",
       },
     },
   },
 };
 
+// 禁用状态
 export const Disabled: Story = {
   args: {
     children: "禁用状态",
     disabled: true,
-    uploadFunction: mockUploadFunction,
+    uploadFunction: mockUploadFunctions.standard,
   },
   parameters: {
     docs: {
       description: {
-        story: "禁用状态的上传按钮。",
+        story: "禁用状态的上传按钮，无法点击和交互。",
       },
     },
   },
 };
 
+// 禁用状态的所有变体
 export const DisabledVariants: Story = {
   render: () => (
-    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+    <div
+      style={{
+        display: "flex",
+        gap: "16px",
+        flexWrap: "wrap",
+        alignItems: "center",
+      }}
+    >
       <UploadButton
-        variant="primary"
+        variant='primary'
         disabled
-        uploadFunction={mockUploadFunction}
+        uploadFunction={mockUploadFunctions.reliable}
       >
         Primary Disabled
       </UploadButton>
       <UploadButton
-        variant="secondary"
+        variant='secondary'
         disabled
-        uploadFunction={mockUploadFunction}
+        uploadFunction={mockUploadFunctions.reliable}
       >
         Secondary Disabled
       </UploadButton>
       <UploadButton
-        variant="outline"
+        variant='outline'
         disabled
-        uploadFunction={mockUploadFunction}
+        uploadFunction={mockUploadFunctions.reliable}
       >
         Outline Disabled
       </UploadButton>
@@ -368,686 +485,272 @@ export const DisabledVariants: Story = {
   parameters: {
     docs: {
       description: {
-        story: "不同变体的禁用状态按钮。",
+        story: "展示不同变体的禁用状态按钮，演示禁用样式的一致性。",
       },
     },
   },
 };
 
-export const WithProgress: Story = {
+// 完整的交互式示例，包含详细的日志和统计
+export const InteractiveDemo: Story = {
   render: () => {
     const [uploadHistory, setUploadHistory] = useState<string[]>([]);
     const [progressLogs, setProgressLogs] = useState<string[]>([]);
-    const lastLogKey = useRef<string>("");
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const logger = new StoryLogger();
 
-    const handleUpload = (files: File[], results?: UploadResult[]) => {
-      const fileNames = files.map((f) => f.name);
+    const handleUpload = (files: File[], results?: any[]) => {
+      const timestamp = new Date().toLocaleTimeString();
+      const successful =
+        results?.filter((r) => r.success).length || files.length;
+      const failed = (results?.length || files.length) - successful;
+
       setUploadHistory((prev) => [
         ...prev,
-        `[${new Date().toLocaleTimeString()}] 上传完成: ${fileNames.join(
-          ", "
-        )} (${files.length}/${results?.length || files.length} 成功)`,
+        `[${timestamp}] 上传完成: ${files
+          .map((f) => f.name)
+          .join(", ")} (${successful} 成功${
+          failed > 0 ? `, ${failed} 失败` : ""
+        })`,
       ]);
     };
 
-    const handleProgress = (progress: UploadProgress[]) => {
+    const handleProgress = (progress: any[]) => {
+      const timestamp = new Date().toLocaleTimeString();
       const completed = progress.filter((p) => p.status === "completed").length;
-      const cancelled = progress.filter((p) => p.status === "cancelled").length;
-      const errors = progress.filter((p) => p.status === "error").length;
       const uploading = progress.filter((p) => p.status === "uploading").length;
+      const failed = progress.filter((p) => p.status === "error").length;
 
-      // 只在重要状态变化时记录日志，避免过多的进度更新日志
-      const currentKey = `${completed}-${cancelled}-${errors}-${uploading}`;
-
-      if (lastLogKey.current !== currentKey) {
-        lastLogKey.current = currentKey;
-
-        setProgressLogs((prev) => [
-          ...prev,
-          `[${new Date().toLocaleTimeString()}] 进度: ${completed}/${
-            progress.length
-          } 完成${uploading > 0 ? `, ${uploading} 上传中` : ""}${
-            cancelled > 0 ? `, ${cancelled} 取消` : ""
-          }${errors > 0 ? `, ${errors} 失败` : ""}`,
-        ]);
+      if (uploading > 0 || completed > 0 || failed > 0) {
+        const status = `${completed}/${progress.length} 完成${
+          uploading > 0 ? `, ${uploading} 上传中` : ""
+        }${failed > 0 ? `, ${failed} 失败` : ""}`;
+        setProgressLogs((prev) => {
+          const newLogs = [...prev, `[${timestamp}] 进度更新: ${status}`];
+          return newLogs.slice(-10); // 只保留最近10条进度日志
+        });
       }
     };
 
-    const clearHistory = () => {
+    const clearLogs = () => {
       setUploadHistory([]);
       setProgressLogs([]);
-      lastLogKey.current = "";
-    };
-
-    return (
-      <div style={{ maxWidth: "600px", padding: "20px" }}>
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            gap: "12px",
-            flexWrap: "wrap",
-          }}
-        >
-          <UploadButton
-            onUpload={handleUpload}
-            onUploadProgress={handleProgress}
-            uploadFunction={mockUploadFunction}
-            multiple={true}
-          >
-            快速上传
-          </UploadButton>
-
-          <UploadButton
-            variant="secondary"
-            onUpload={handleUpload}
-            onUploadProgress={handleProgress}
-            uploadFunction={slowUploadFunction}
-            multiple={true}
-          >
-            慢速上传 (测试取消)
-          </UploadButton>
-
-          <button
-            onClick={clearHistory}
-            style={{
-              padding: "8px 16px",
-              background: "#ef4444",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            清空记录
-          </button>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
-          }}
-        >
-          <div>
-            <h4 style={{ margin: "0 0 8px 0" }}>上传历史</h4>
-            <div
-              style={{
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                padding: "12px",
-                height: "200px",
-                overflowY: "auto",
-                fontSize: "14px",
-              }}
-            >
-              {uploadHistory.length === 0 ? (
-                <p style={{ margin: 0, color: "#64748b" }}>暂无记录</p>
-              ) : (
-                uploadHistory.map((log, index) => (
-                  <div key={index} style={{ marginBottom: "4px" }}>
-                    {log}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h4 style={{ margin: "0 0 8px 0" }}>进度日志</h4>
-            <div
-              style={{
-                background: "#f8fafc",
-                border: "1px solid #e2e8f0",
-                borderRadius: "4px",
-                padding: "12px",
-                height: "200px",
-                overflowY: "auto",
-                fontSize: "14px",
-              }}
-            >
-              {progressLogs.length === 0 ? (
-                <p style={{ margin: 0, color: "#64748b" }}>暂无记录</p>
-              ) : (
-                progressLogs.map((log, index) => (
-                  <div key={index} style={{ marginBottom: "4px" }}>
-                    {log}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "演示带有进度跟踪和历史记录的上传按钮。",
-      },
-    },
-  },
-};
-
-// 即时上传模式 - 选择文件后立即上传
-export const InstantUpload: Story = {
-  args: {
-    children: "选择并立即上传",
-    multiple: true,
-    uploadFunction: mockUploadFunction,
-    onUpload: (files: File[], results?: UploadResult[]) => {
-      console.log("上传完成的文件:", files);
-      const successCount =
-        results?.filter((r) => r.success).length || files.length;
-      alert(
-        `已上传 ${successCount}/${files.length} 个文件: ${files
-          .map((f) => f.name)
-          .join(", ")}`
-      );
-    },
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "选择文件后立即开始上传，适用于需要快速上传的场景。",
-      },
-    },
-  },
-};
-
-export const FileSelectionDemo: Story = {
-  render: () => {
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
-    const handleFileUpload = (files: File[], results?: UploadResult[]) => {
-      setSelectedFiles(files);
-      console.log("上传完成:", files, results);
-    };
-
-    const clearSelection = () => {
       setSelectedFiles([]);
     };
 
     return (
-      <div style={{ maxWidth: "500px", padding: "20px" }}>
-        <div style={{ marginBottom: "20px" }}>
-          <UploadButton
-            onUpload={handleFileUpload}
-            uploadFunction={mockUploadFunction}
-            multiple={true}
-            variant="outline"
-          >
-            选择并上传文件
-          </UploadButton>
+      <div style={{ padding: "20px", maxWidth: "900px" }}>
+        <div style={{ marginBottom: "24px" }}>
+          <h3 style={{ margin: "0 0 16px 0", color: "#374151" }}>
+            交互式上传按钮演示
+          </h3>
 
-          {selectedFiles.length > 0 && (
-            <button
-              onClick={clearSelection}
-              style={{
-                marginLeft: "12px",
-                padding: "8px 16px",
-                background: "#64748b",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              清空选择
-            </button>
-          )}
-        </div>
-
-        <div>
-          <h4 style={{ margin: "0 0 8px 0" }}>已选择的文件:</h4>
+          {/* 按钮组 */}
           <div
             style={{
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
-              borderRadius: "4px",
-              padding: "12px",
-              minHeight: "100px",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "12px",
+              marginBottom: "20px",
             }}
           >
-            {selectedFiles.length === 0 ? (
-              <p style={{ margin: 0, color: "#64748b" }}>尚未选择任何文件</p>
-            ) : (
-              <ul style={{ margin: 0, paddingLeft: "20px" }}>
-                {selectedFiles.map((file, index) => (
-                  <li key={index} style={{ marginBottom: "4px" }}>
-                    <strong>{file.name}</strong> (
-                    {(file.size / 1024).toFixed(1)} KB)
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "演示文件上传功能，上传完成后显示文件信息，用于文件管理场景。",
-      },
-    },
-  },
-};
-
-export const ImageUploadWithPreview: Story = {
-  render: () => {
-    const [selectedImages, setSelectedImages] = useState<File[]>([]);
-    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-
-    const handleImageUpload = (files: File[], results?: UploadResult[]) => {
-      setSelectedImages(files);
-      console.log("图片上传完成:", files, results);
-
-      // 生成图片预览
-      const previews: string[] = [];
-      files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            previews.push(e.target.result as string);
-            if (previews.length === files.length) {
-              setImagePreviews(previews);
-            }
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    };
-
-    const clearSelection = () => {
-      setSelectedImages([]);
-      setImagePreviews([]);
-    };
-
-    return (
-      <div style={{ maxWidth: "600px", padding: "20px" }}>
-        <div style={{ marginBottom: "20px" }}>
-          <UploadButton
-            onUpload={handleImageUpload}
-            uploadFunction={mockUploadFunction}
-            acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif", ".webp"]}
-            multiple={true}
-            variant="secondary"
-          >
-            上传图片并预览
-          </UploadButton>
-
-          {selectedImages.length > 0 && (
-            <button
-              onClick={clearSelection}
-              style={{
-                marginLeft: "12px",
-                padding: "8px 16px",
-                background: "#ef4444",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              清空预览
-            </button>
-          )}
-        </div>
-
-        {imagePreviews.length > 0 && (
-          <div>
-            <h4 style={{ margin: "0 0 12px 0" }}>图片预览:</h4>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
-                gap: "12px",
-              }}
-            >
-              {imagePreviews.map((preview, index) => (
-                <div
-                  key={index}
-                  style={{
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    background: "#f8fafc",
-                  }}
-                >
-                  <img
-                    src={preview}
-                    alt={selectedImages[index]?.name}
-                    style={{
-                      width: "100%",
-                      height: "120px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div
-                    style={{
-                      padding: "8px",
-                      fontSize: "12px",
-                      background: "white",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontWeight: "bold",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {selectedImages[index]?.name}
-                    </div>
-                    <div style={{ color: "#64748b" }}>
-                      {(selectedImages[index]?.size / 1024).toFixed(1)} KB
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "上传图片并显示预览，演示如何在上传完成后处理和预览图片文件。",
-      },
-    },
-  },
-};
-
-export const FormIntegration: Story = {
-  render: () => {
-    const [formData, setFormData] = useState({
-      title: "",
-      description: "",
-      files: [] as File[],
-    });
-
-    const handleFileUpload = (files: File[], results?: UploadResult[]) => {
-      setFormData((prev) => ({ ...prev, files }));
-      console.log("表单文件上传完成:", files, results);
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      console.log("表单数据:", formData);
-      alert(
-        `表单提交:\n标题: ${formData.title}\n描述: ${
-          formData.description
-        }\n文件: ${formData.files.map((f) => f.name).join(", ")}`
-      );
-    };
-
-    const handleReset = () => {
-      setFormData({ title: "", description: "", files: [] });
-    };
-
-    return (
-      <div style={{ maxWidth: "500px", padding: "20px" }}>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "4px",
-                fontWeight: "bold",
-              }}
-            >
-              标题:
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, title: e.target.value }))
-              }
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #d1d5db",
-                borderRadius: "4px",
-              }}
-              required
-            />
-          </div>
-
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "4px",
-                fontWeight: "bold",
-              }}
-            >
-              描述:
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-              rows={3}
-              style={{
-                width: "100%",
-                padding: "8px",
-                border: "1px solid #d1d5db",
-                borderRadius: "4px",
-                resize: "vertical",
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "8px",
-                fontWeight: "bold",
-              }}
-            >
-              附件:
-            </label>
             <UploadButton
-              onUpload={handleFileUpload}
-              uploadFunction={mockUploadFunction}
+              variant='primary'
+              onUpload={handleUpload}
+              onUploadProgress={handleProgress}
+              uploadFunction={mockUploadFunctions.fast}
               multiple={true}
-              variant="outline"
-              size="small"
+              acceptedFileTypes={fileTypeConfigs.images}
             >
-              选择文件
+              📸 快速图片上传
             </UploadButton>
 
-            {formData.files.length > 0 && (
-              <div style={{ marginTop: "8px", fontSize: "14px" }}>
-                <strong>已选择 {formData.files.length} 个文件:</strong>
-                <ul style={{ margin: "4px 0", paddingLeft: "20px" }}>
-                  {formData.files.map((file, index) => (
-                    <li key={index}>{file.name}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <UploadButton
+              variant='secondary'
+              onUpload={handleUpload}
+              onUploadProgress={handleProgress}
+              uploadFunction={mockUploadFunctions.standard}
+              multiple={true}
+              acceptedFileTypes={fileTypeConfigs.documents}
+              maxFileSize={fileSizeLimits.medium}
+            >
+              📄 文档上传
+            </UploadButton>
+
+            <UploadButton
+              variant='outline'
+              onUpload={handleUpload}
+              onUploadProgress={handleProgress}
+              uploadFunction={mockUploadFunctions.slow}
+              multiple={true}
+              maxConcurrent={1}
+            >
+              🐌 慢速上传 (测试)
+            </UploadButton>
+
+            <UploadButton
+              variant='primary'
+              onUpload={handleUpload}
+              onUploadProgress={handleProgress}
+              uploadFunction={mockUploadFunctions.unreliable}
+              multiple={true}
+              maxConcurrent={3}
+            >
+              ⚠️ 不稳定上传
+            </UploadButton>
           </div>
 
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              type="submit"
-              style={{
-                padding: "10px 20px",
-                background: "#3b82f6",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              提交表单
-            </button>
-
-            <button
-              type="button"
-              onClick={handleReset}
-              style={{
-                padding: "10px 20px",
-                background: "#6b7280",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              重置
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "演示如何将文件上传按钮集成到表单中，上传完成后文件会作为表单数据的一部分。",
-      },
-    },
-  },
-};
-
-export const MultipleSelectionTypes: Story = {
-  render: () => {
-    const [allFiles, setAllFiles] = useState<{ [key: string]: File[] }>({
-      documents: [],
-      images: [],
-      any: [],
-    });
-
-    const handleFileUpload =
-      (type: string) => (files: File[], results?: UploadResult[]) => {
-        setAllFiles((prev) => ({ ...prev, [type]: files }));
-        console.log(`${type} 文件上传完成:`, files, results);
-      };
-
-    const clearAll = () => {
-      setAllFiles({ documents: [], images: [], any: [] });
-    };
-
-    const totalFiles = Object.values(allFiles).flat().length;
-
-    return (
-      <div style={{ maxWidth: "600px", padding: "20px" }}>
-        <div
-          style={{
-            marginBottom: "20px",
-            display: "flex",
-            gap: "12px",
-            flexWrap: "wrap",
-          }}
-        >
-          <UploadButton
-            onUpload={handleFileUpload("documents")}
-            uploadFunction={mockUploadFunction}
-            acceptedFileTypes={[".pdf", ".doc", ".docx", ".txt"]}
-            multiple={true}
-            variant="primary"
-            size="small"
+          <button
+            onClick={clearLogs}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#6b7280",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "14px",
+            }}
           >
-            上传文档
-          </UploadButton>
-
-          <UploadButton
-            onUpload={handleFileUpload("images")}
-            uploadFunction={mockUploadFunction}
-            acceptedFileTypes={[".jpg", ".jpeg", ".png", ".gif"]}
-            multiple={true}
-            variant="secondary"
-            size="small"
-          >
-            上传图片
-          </UploadButton>
-
-          <UploadButton
-            onUpload={handleFileUpload("any")}
-            uploadFunction={mockUploadFunction}
-            multiple={true}
-            variant="outline"
-            size="small"
-          >
-            上传任意文件
-          </UploadButton>
-
-          {totalFiles > 0 && (
-            <button
-              onClick={clearAll}
-              style={{
-                padding: "6px 12px",
-                background: "#ef4444",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              清空所有
-            </button>
-          )}
+            清空所有记录
+          </button>
         </div>
 
+        {/* 统计和日志显示 */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "16px",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "20px",
           }}
         >
-          {Object.entries(allFiles).map(([type, files]) => (
-            <div key={type}>
-              <h4 style={{ margin: "0 0 8px 0", textTransform: "capitalize" }}>
-                {type === "documents"
-                  ? "文档"
-                  : type === "images"
-                  ? "图片"
-                  : "其他文件"}{" "}
-                ({files.length})
-              </h4>
-              <div
-                style={{
-                  background: "#f8fafc",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "4px",
-                  padding: "8px",
-                  minHeight: "120px",
-                  fontSize: "12px",
-                }}
-              >
-                {files.length === 0 ? (
-                  <p style={{ margin: 0, color: "#64748b" }}>无文件</p>
-                ) : (
-                  <ul style={{ margin: 0, paddingLeft: "16px" }}>
-                    {files.map((file, index) => (
-                      <li key={index} style={{ marginBottom: "2px" }}>
-                        {file.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+          {/* 上传历史 */}
+          <div>
+            <h4 style={{ margin: "0 0 12px 0", color: "#374151" }}>上传历史</h4>
+            <div
+              style={{
+                background: "#f8fafc",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "12px",
+                minHeight: "200px",
+                maxHeight: "300px",
+                overflowY: "auto",
+                fontSize: "13px",
+                fontFamily: "monospace",
+              }}
+            >
+              {uploadHistory.length === 0 ? (
+                <div
+                  style={{
+                    color: "#6b7280",
+                    fontStyle: "italic",
+                    textAlign: "center",
+                    paddingTop: "80px",
+                  }}
+                >
+                  暂无上传记录
+                </div>
+              ) : (
+                uploadHistory.map((log, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      marginBottom: "6px",
+                      padding: "4px 0",
+                      color: "#374151",
+                      borderBottom: "1px solid #e5e7eb",
+                    }}
+                  >
+                    {log}
+                  </div>
+                ))
+              )}
             </div>
-          ))}
+          </div>
+
+          {/* 进度日志 */}
+          <div>
+            <h4 style={{ margin: "0 0 12px 0", color: "#374151" }}>实时进度</h4>
+            <div
+              style={{
+                background: "#f0f9ff",
+                border: "1px solid #0ea5e9",
+                borderRadius: "8px",
+                padding: "12px",
+                minHeight: "200px",
+                maxHeight: "300px",
+                overflowY: "auto",
+                fontSize: "13px",
+                fontFamily: "monospace",
+              }}
+            >
+              {progressLogs.length === 0 ? (
+                <div
+                  style={{
+                    color: "#0369a1",
+                    fontStyle: "italic",
+                    textAlign: "center",
+                    paddingTop: "80px",
+                  }}
+                >
+                  等待上传操作...
+                </div>
+              ) : (
+                progressLogs.map((log, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      marginBottom: "6px",
+                      padding: "4px 0",
+                      color: "#0c4a6e",
+                      borderBottom: "1px solid #bae6fd",
+                    }}
+                  >
+                    {log}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 使用提示 */}
+        <div
+          style={{
+            marginTop: "24px",
+            padding: "16px",
+            backgroundColor: "#ecfdf5",
+            borderRadius: "8px",
+            border: "1px solid #10b981",
+          }}
+        >
+          <h4 style={{ margin: "0 0 12px 0", color: "#047857" }}>
+            💡 功能说明
+          </h4>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "12px",
+              fontSize: "14px",
+              color: "#065f46",
+            }}
+          >
+            <div>
+              <strong>📸 快速图片上传：</strong>
+              仅支持图片格式，快速上传（100ms间隔）
+            </div>
+            <div>
+              <strong>📄 文档上传：</strong>支持文档格式，标准速度，最大5MB
+            </div>
+            <div>
+              <strong>🐌 慢速上传：</strong>串行上传，适合测试取消功能
+            </div>
+            <div>
+              <strong>⚠️ 不稳定上传：</strong>30%失败率，测试错误处理
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -1055,8 +758,85 @@ export const MultipleSelectionTypes: Story = {
   parameters: {
     docs: {
       description: {
+        story: `
+完整的交互式上传按钮演示，展示了不同配置的按钮和实时日志：
+
+### 功能特性
+
+- **多种上传模式**：快速、标准、慢速、不稳定
+- **文件类型过滤**：图片、文档等专门化上传
+- **实时日志记录**：上传历史和进度跟踪
+- **错误处理演示**：模拟网络不稳定情况
+- **用户体验测试**：不同速度和并发设置
+
+### 测试建议
+
+1. 尝试不同类型的文件上传
+2. 观察慢速上传的取消功能
+3. 测试不稳定上传的错误处理
+4. 对比不同按钮样式和交互
+        `,
+      },
+    },
+  },
+};
+
+// 自定义样式示例
+export const CustomStyling: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        alignItems: "flex-start",
+      }}
+    >
+      <UploadButton
+        className='custom-upload-btn'
+        style={{
+          background: "linear-gradient(45deg, #ff6b6b, #feca57)",
+          border: "none",
+          color: "white",
+          fontWeight: "bold",
+          textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+        }}
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🎨 渐变风格按钮
+      </UploadButton>
+
+      <UploadButton
+        style={{
+          background: "#2c3e50",
+          color: "#ecf0f1",
+          border: "2px solid #34495e",
+          borderRadius: "20px",
+          padding: "12px 24px",
+        }}
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        🖤 深色主题按钮
+      </UploadButton>
+
+      <UploadButton
+        style={{
+          background: "transparent",
+          color: "#e74c3c",
+          border: "2px dashed #e74c3c",
+          borderRadius: "8px",
+        }}
+        uploadFunction={mockUploadFunctions.reliable}
+      >
+        📎 虚线边框按钮
+      </UploadButton>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
         story:
-          "演示多个不同类型的文件上传按钮，每个按钮有不同的文件类型限制，支持分类上传管理。",
+          "展示如何通过 style 属性和 className 自定义按钮样式，实现各种视觉效果。",
       },
     },
   },

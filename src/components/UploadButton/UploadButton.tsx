@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { DialogUploader } from "../DialogUploader/DialogUploader";
 import { UploadProgress, UploadOptions, UploadResult } from "../../hooks";
+import { DialogUploadIcon } from "../Icons";
 import "./UploadButton.css";
 
 interface UploadButtonProps {
   children?: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   variant?: "primary" | "secondary" | "outline";
   size?: "small" | "medium" | "large";
   onUpload?: (successfulFiles: File[], results?: UploadResult[]) => void;
@@ -22,6 +24,7 @@ interface UploadButtonProps {
 export const UploadButton: React.FC<UploadButtonProps> = ({
   children = "上传文件",
   className = "",
+  style,
   variant = "primary",
   size = "medium",
   onUpload,
@@ -65,23 +68,11 @@ export const UploadButton: React.FC<UploadButtonProps> = ({
         className={`upload-button upload-button--${variant} upload-button--${size} ${className} ${
           disabled ? "upload-button--disabled" : ""
         }`}
+        style={style}
         onClick={openDialog}
         disabled={disabled}
       >
-        <svg
-          className="upload-button-icon"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-          />
-        </svg>
+        <DialogUploadIcon className='upload-button-icon uploader-icon-dialog-upload' />
         {children}
       </button>
 

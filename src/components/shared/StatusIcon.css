@@ -1,0 +1,72 @@
+/* 状态图标基础样式 */
+.status-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 状态图标变体 */
+.status-icon--default {
+  /* 使用默认样式 */
+}
+
+.status-icon--dialog {
+  /* 对话框变体样式 */
+}
+
+/* 状态图标状态样式 */
+.status-icon--success {
+  /* 成功状态 */
+}
+
+.status-icon--error {
+  /* 错误状态 */
+}
+
+.status-icon--cancelled {
+  /* 取消状态 */
+}
+
+.status-icon--uploading {
+  /* 上传中状态 */
+}
+
+.status-icon--pending {
+  /* 等待状态 */
+}
+
+/* 旋转动画 */
+.uploader-spinning {
+  animation: spin 1s linear infinite;
+}
+
+.dialog-uploader-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 图标颜色变量 */
+:root {
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+  --neutral-color: #6b7280;
+
+  --success-bg: #f0fdf4;
+  --error-bg: #fef2f2;
+  --warning-bg: #fef3c7;
+  --info-bg: #f0f9ff;
+  --neutral-bg: #f9fafb;
+}

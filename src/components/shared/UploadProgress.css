@@ -1,0 +1,259 @@
+/* 上传进度基础样式 */
+.upload-progress {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.upload-progress__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.upload-progress__header-info {
+  flex: 1;
+}
+
+.upload-progress__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.upload-progress__summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.upload-progress__stats {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.upload-progress__percentage {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.upload-progress__cancel-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-progress__cancel-all-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.upload-progress__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.upload-progress__item {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fafafa;
+}
+
+.upload-progress__item--uploading {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.upload-progress__item--completed {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.upload-progress__item--error {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.upload-progress__item--cancelled {
+  border-color: #6b7280;
+  background: rgba(107, 114, 128, 0.05);
+}
+
+.upload-progress__item--pending {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.upload-progress__main {
+  margin-bottom: 8px;
+}
+
+.upload-progress__file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-progress__name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.upload-progress__name {
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-progress__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-progress__status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.upload-progress__status {
+  font-size: 12px;
+  color: #6b7280;
+  flex: 1;
+}
+
+.upload-progress__percent {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* 进度条样式 */
+.upload-progress__bar {
+  height: 6px;
+  background-color: #f3f4f6;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.upload-progress__fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.upload-progress__fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 总体进度条 */
+.upload-progress__overall {
+  margin-top: 4px;
+}
+
+.upload-progress__overall-bar {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.upload-progress__overall-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.upload-progress__overall-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .upload-progress__header,
+  .upload-progress__summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .upload-progress__summary {
+    flex-direction: row;
+  }
+
+  .upload-progress__name-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .upload-progress__actions {
+    align-self: flex-end;
+  }
+
+  .upload-progress__item {
+    padding: 12px 8px;
+  }
+}

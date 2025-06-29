@@ -42,53 +42,83 @@ export const useUploadQueue = ({
   const abortControllers = useRef<(AbortController | null)[]>([]);
   const uploadAborted = useRef(false);
   const selectedFilesRef = useRef<File[]>([]);
+  const callbacksRef = useRef({ onUploadProgress, onUploadComplete });
 
-  // 监听上传进度变化，检查是否所有上传都已完成
+  // 更新回调引用
   useEffect(() => {
-    if (uploadProgress.length > 0) {
-      // 始终通知进度更新
-      if (onUploadProgress) {
-        onUploadProgress(uploadProgress);
-      }
+    callbacksRef.current = { onUploadProgress, onUploadComplete };
+  }, [onUploadProgress, onUploadComplete]);
 
-      // 如果正在上传，检查是否所有文件都已完成
-      if (isUploading) {
-        const allCompleted = uploadProgress.every(
-          (p) =>
-            p.status === "completed" ||
-            p.status === "error" ||
-            p.status === "cancelled"
-        );
+  // 检查上传状态并处理完成
+  const checkUploadCompletion = useCallback(
+    (progress: UploadProgress[]) => {
+      if (progress.length === 0) return;
 
-        if (allCompleted) {
-          setIsUploading(false);
+      const allCompleted = progress.every(
+        (p) =>
+          p.status === "completed" ||
+          p.status === "error" ||
+          p.status === "cancelled"
+      );
 
-          // 通知上传完成
-          if (onUploadComplete) {
-            const successfulFiles = selectedFilesRef.current.filter((file) =>
-              uploadProgress.some(
-                (p) => p.fileName === file.name && p.status === "completed"
-              )
-            );
-            const results = uploadProgress.map((p) => ({
-              success: p.status === "completed",
-              data: p.status === "completed" ? {} : undefined,
-              error: p.status === "error" ? p.error || "上传失败" : undefined,
-            }));
+      if (allCompleted && isUploading) {
+        setIsUploading(false);
 
-            onUploadComplete(successfulFiles, results);
-          }
+        // 通知上传完成
+        const callbacks = callbacksRef.current;
+        if (callbacks.onUploadComplete) {
+          const successfulFiles = selectedFilesRef.current.filter((file) =>
+            progress.some(
+              (p) => p.fileName === file.name && p.status === "completed"
+            )
+          );
+          const results = progress.map((p) => ({
+            success: p.status === "completed",
+            data: p.status === "completed" ? {} : undefined,
+            error: p.status === "error" ? p.error || "上传失败" : undefined,
+          }));
+
+          callbacks.onUploadComplete(successfulFiles, results);
         }
       }
+    },
+    [isUploading]
+  );
+
+  // 监听上传进度变化
+  useEffect(() => {
+    if (uploadProgress.length > 0) {
+      // 通知进度更新
+      const callbacks = callbacksRef.current;
+      if (callbacks.onUploadProgress) {
+        callbacks.onUploadProgress(uploadProgress);
+      }
+
+      // 检查是否完成
+      checkUploadCompletion(uploadProgress);
     }
-  }, [uploadProgress, isUploading, onUploadProgress, onUploadComplete]);
+  }, [uploadProgress, checkUploadCompletion]);
+
+  // 更新上传进度的辅助函数
+  const updateProgress = useCallback(
+    (index: number, updates: Partial<UploadProgress>) => {
+      setUploadProgress((prev) => {
+        const updated = [...prev];
+        if (updated[index] && updated[index].status !== "cancelled") {
+          updated[index] = { ...updated[index], ...updates };
+        }
+        return updated;
+      });
+    },
+    []
+  );
 
   // 上传单个文件
   const uploadSingleFile = useCallback(
     async (file: File, index: number): Promise<void> => {
       // 检查文件是否已被取消
-      const currentStatus = uploadProgress[index]?.status;
-      if (currentStatus === "cancelled") {
+      const currentProgress = uploadProgress[index];
+      if (currentProgress?.status === "cancelled") {
         return;
       }
 
@@ -96,7 +126,7 @@ export const useUploadQueue = ({
       abortControllers.current[index] = controller;
 
       try {
-        // 再次检查是否被取消（在设置AbortController后）
+        // 再次检查是否被取消
         if (uploadProgress[index]?.status === "cancelled") {
           console.log(
             `文件 ${file.name} (索引: ${index}) 在设置AbortController后被取消`
@@ -105,59 +135,32 @@ export const useUploadQueue = ({
         }
 
         // 更新状态为上传中
-        setUploadProgress((prev) => {
-          const updated = [...prev];
-          if (updated[index] && updated[index].status !== "cancelled") {
-            updated[index] = {
-              ...updated[index],
-              status: "uploading",
-            };
-          }
-          return updated;
-        });
+        updateProgress(index, { status: "uploading" });
 
         const result = await uploadFunction({
           file,
           onProgress: (progress) => {
-            setUploadProgress((prev) => {
-              const updated = [...prev];
-              if (updated[index] && updated[index].status !== "cancelled") {
-                updated[index] = {
-                  ...updated[index],
-                  progress,
-                };
-              }
-              return updated;
-            });
+            updateProgress(index, { progress });
           },
           signal: controller.signal,
         });
 
-        // 根据后端返回结果处理
-        setUploadProgress((prev) => {
-          const updated = [...prev];
-          if (updated[index] && updated[index].status !== "cancelled") {
-            if (result.success) {
-              // 后端返回成功，立即跳到100%
-              updated[index] = {
-                ...updated[index],
-                progress: 100,
-                status: "completed",
-                error: undefined,
-              };
-            } else {
-              // 后端返回失败，保持当前进度但设置为错误状态
-              updated[index] = {
-                ...updated[index],
-                status: "error",
-                error: result.error || "上传失败",
-              };
-            }
-          }
-          return updated;
-        });
+        // 根据结果更新状态
+        if (result.success) {
+          updateProgress(index, {
+            progress: 100,
+            status: "completed",
+            error: undefined,
+          });
+        } else {
+          // 失败时将进度设置为0，让用户清楚知道上传失败
+          updateProgress(index, {
+            progress: 0,
+            status: "error",
+            error: result.error || "上传失败",
+          });
+        }
       } catch (error: any) {
-        // 上传失败（包括用户取消）
         if (error.name === "AbortError") {
           console.log(`文件 ${file.name} (索引: ${index}) 上传被中断`);
           return;
@@ -165,22 +168,17 @@ export const useUploadQueue = ({
 
         console.log(`文件 ${file.name} (索引: ${index}) 上传出错:`, error);
 
-        setUploadProgress((prev) => {
-          const updated = [...prev];
-          if (updated[index] && updated[index].status !== "cancelled") {
-            updated[index] = {
-              ...updated[index],
-              status: "error",
-              error: error.message || "上传失败",
-            };
-          }
-          return updated;
+        // 错误时将进度设置为0
+        updateProgress(index, {
+          progress: 0,
+          status: "error",
+          error: error.message || "上传失败",
         });
       } finally {
         abortControllers.current[index] = null;
       }
     },
-    [uploadFunction]
+    [uploadFunction, uploadProgress, updateProgress]
   );
 
   // 开始上传
@@ -191,6 +189,7 @@ export const useUploadQueue = ({
       selectedFilesRef.current = files;
 
       setIsUploading(true);
+      setIsCancelling(false);
       uploadAborted.current = false;
       abortControllers.current = new Array(files.length).fill(null);
 
@@ -202,7 +201,7 @@ export const useUploadQueue = ({
       }));
       setUploadProgress(initialProgress);
 
-      // 实现正确的并发队列控制
+      // 实现并发队列控制
       let nextFileIndex = 0;
       const runningUploads: Promise<void>[] = [];
 
@@ -219,20 +218,19 @@ export const useUploadQueue = ({
         }
       };
 
-      // 启动并发上传（启动多个上传链，每个链会依次处理文件）
+      // 启动并发上传
       const concurrency = Math.min(maxConcurrent, files.length);
       for (let i = 0; i < concurrency; i++) {
         runningUploads.push(uploadNextFile());
       }
 
       try {
-        // 等待所有上传链完成
         await Promise.allSettled(runningUploads);
       } catch (error) {
         console.error("上传过程中出现错误:", error);
       }
     },
-    [maxConcurrent, uploadSingleFile, uploadFunction, onUploadComplete]
+    [maxConcurrent, uploadSingleFile]
   );
 
   // 取消所有上传
@@ -256,6 +254,11 @@ export const useUploadQueue = ({
           progress.status === "uploading" || progress.status === "pending"
             ? "cancelled"
             : progress.status,
+        // 取消时将进度设置为0
+        progress:
+          progress.status === "uploading" || progress.status === "pending"
+            ? 0
+            : progress.progress,
       }))
     );
 

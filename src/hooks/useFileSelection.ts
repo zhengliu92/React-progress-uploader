@@ -1,4 +1,12 @@
 import { useState, useCallback } from "react";
+import {
+  validateFileType,
+  validateFileSize,
+  validateFileCount,
+  isDuplicateFile,
+  FileValidationResult,
+  DEFAULT_MAX_FILES,
+} from "../components/Uploader/utils";
 
 interface UseFileSelectionOptions {
   multiple?: boolean;
@@ -10,42 +18,38 @@ interface UseFileSelectionOptions {
 export const useFileSelection = ({
   multiple = true,
   acceptedFileTypes,
-  maxFiles = 10,
+  maxFiles = DEFAULT_MAX_FILES,
   maxFileSize,
 }: UseFileSelectionOptions = {}) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectionError, setSelectionError] = useState<string | null>(null);
 
-  // 验证文件
+  // 验证单个文件的所有条件
   const validateFile = useCallback(
-    (file: File): string | null => {
+    (file: File, existingFiles: File[]): FileValidationResult => {
       // 检查文件大小
-      if (maxFileSize && file.size > maxFileSize) {
-        const sizeMB = (maxFileSize / 1024 / 1024).toFixed(1);
-        return `文件 "${file.name}" 超过了 ${sizeMB}MB 的大小限制`;
-      }
-
-      // 检查文件类型
-      if (acceptedFileTypes && acceptedFileTypes.length > 0) {
-        const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
-        const fileType = file.type.toLowerCase();
-
-        const isTypeAccepted = acceptedFileTypes.some((type) => {
-          const normalizedType = type.toLowerCase();
-          return (
-            fileExtension === normalizedType ||
-            fileType.includes(normalizedType.replace(".", ""))
-          );
-        });
-
-        if (!isTypeAccepted) {
-          return `文件 "${
-            file.name
-          }" 的类型不被支持。支持的类型：${acceptedFileTypes.join(", ")}`;
+      if (maxFileSize) {
+        const sizeValidation = validateFileSize(file, maxFileSize);
+        if (!sizeValidation.isValid) {
+          return sizeValidation;
         }
       }
 
-      return null;
+      // 检查文件类型
+      const typeValidation = validateFileType(file, acceptedFileTypes);
+      if (!typeValidation.isValid) {
+        return typeValidation;
+      }
+
+      // 检查文件是否重复
+      if (isDuplicateFile(file, existingFiles)) {
+        return {
+          isValid: false,
+          error: `文件 "${file.name}" 已经存在`,
+        };
+      }
+
+      return { isValid: true };
     },
     [acceptedFileTypes, maxFileSize]
   );
@@ -57,53 +61,68 @@ export const useFileSelection = ({
 
       const fileArray = Array.from(files);
 
-      // 验证文件数量
-      const totalFiles = multiple
-        ? selectedFiles.length + fileArray.length
-        : fileArray.length;
-      if (totalFiles > maxFiles) {
-        setSelectionError(`最多只能选择 ${maxFiles} 个文件`);
+      // 如果是单选模式，直接替换
+      if (!multiple) {
+        if (fileArray.length > 1) {
+          setSelectionError("单选模式下只能选择一个文件");
+          return false;
+        }
+
+        const file = fileArray[0];
+        if (!file) return false;
+
+        const validation = validateFile(file, []);
+        if (!validation.isValid) {
+          setSelectionError(validation.error || "文件验证失败");
+          return false;
+        }
+
+        setSelectedFiles([file]);
+        return true;
+      }
+
+      // 多选模式：验证文件数量
+      const countValidation = validateFileCount(
+        selectedFiles.length,
+        fileArray.length,
+        maxFiles
+      );
+      if (!countValidation.isValid) {
+        setSelectionError(countValidation.error || "文件数量超限");
         return false;
       }
 
-      // 验证每个文件
-      const validationErrors: string[] = [];
+      // 验证每个文件并收集有效文件
       const validFiles: File[] = [];
+      const errors: string[] = [];
 
       for (const file of fileArray) {
-        const error = validateFile(file);
-        if (error) {
-          validationErrors.push(error);
-        } else {
+        const validation = validateFile(file, [
+          ...selectedFiles,
+          ...validFiles,
+        ]);
+        if (validation.isValid) {
           validFiles.push(file);
+        } else if (validation.error) {
+          errors.push(validation.error);
         }
       }
 
-      // 如果有验证错误，显示第一个错误
-      if (validationErrors.length > 0) {
-        setSelectionError(validationErrors[0]);
-        return false;
+      // 如果有错误，显示第一个错误
+      if (errors.length > 0) {
+        setSelectionError(errors[0]);
+        // 如果没有有效文件，直接返回
+        if (validFiles.length === 0) {
+          return false;
+        }
       }
 
       // 添加有效文件
-      if (multiple) {
-        setSelectedFiles((prev) => {
-          // 去重：检查是否已经存在相同名称和大小的文件
-          const newFiles = validFiles.filter(
-            (newFile) =>
-              !prev.some(
-                (existingFile) =>
-                  existingFile.name === newFile.name &&
-                  existingFile.size === newFile.size
-              )
-          );
-          return [...prev, ...newFiles];
-        });
-      } else {
-        setSelectedFiles(validFiles.slice(0, 1));
+      if (validFiles.length > 0) {
+        setSelectedFiles((prev) => [...prev, ...validFiles]);
       }
 
-      return true;
+      return validFiles.length > 0;
     },
     [selectedFiles, multiple, maxFiles, validateFile]
   );
@@ -146,6 +165,7 @@ export const useFileSelection = ({
       totalSizeMB: parseFloat(totalSizeMB),
       maxFiles,
       canAddMore: canAddMoreFiles(),
+      remainingSlots: maxFiles - selectedFiles.length,
     };
   }, [selectedFiles, maxFiles, canAddMoreFiles]);
 

@@ -54,18 +54,18 @@ export const useUploadUI = () => {
     const uploading = progress.filter((p) => p.status === "uploading").length;
     const pending = progress.filter((p) => p.status === "pending").length;
 
-    // 计算总进度百分比（正确处理不同状态的文件）
+    // 计算总进度百分比（处理完成的文件都按100%计算）
     const totalProgress = progress.reduce((sum, p) => {
       switch (p.status) {
         case "completed":
-          return sum + 100; // 已完成的文件按100%计算
+        case "error":
+        case "cancelled":
+          return sum + 100; // 已完成、失败、取消的文件都按100%计算（已处理完成）
         case "uploading":
           return sum + p.progress; // 正在上传的文件按实际进度计算
-        case "cancelled":
-        case "error":
         case "pending":
         default:
-          return sum + 0; // 取消、错误、等待的文件按0%计算
+          return sum + 0; // 等待的文件按0%计算
       }
     }, 0);
     const averageProgress = total > 0 ? Math.round(totalProgress / total) : 0;

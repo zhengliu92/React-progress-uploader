@@ -12,66 +12,27 @@ A feature-complete, type-safe React file upload component library that supports 
 ## 📦 Installation
 
 ```bash
-npm install react-progress-uploader
+npm install react-progress-uploader axios
 ```
 
-## 🚀 Best Practices
+## 🚀 Quick Start - Axios Upload Example
 
-### 1. Basic Upload (Recommended)
-
-```tsx
-import React from 'react';
-import { UploadButton } from 'react-progress-uploader';
-
-function BasicUpload() {
-  const uploadFunction = async ({ file, onProgress, signal }) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-      signal, // Support cancellation
-    });
-    
-    return {
-      success: response.ok,
-      data: await response.json(),
-    };
-  };
-
-  return (
-    <UploadButton 
-      uploadFunction={uploadFunction}
-      multiple={true}
-      acceptedFileTypes={['.jpg', '.png', '.pdf']}
-      maxFiles={5}
-      maxFileSize={10 * 1024 * 1024} // 10MB
-      onUpload={(files, results) => {
-        console.log('Upload completed:', files);
-      }}
-    >
-      Select Files to Upload
-    </UploadButton>
-  );
-}
-```
-
-### 2. Using Axios (Recommended for Production)
+### Basic Usage
 
 ```tsx
-import axios from 'axios';
-import { UploadButton } from 'react-progress-uploader';
+import React from "react";
+import axios from "axios";
+import { UploadButton } from "react-progress-uploader";
 
-function AxiosUpload() {
+function FileUpload() {
   const axiosUploadFunction = async ({ file, onProgress, signal }) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        signal,
+      const response = await axios.post("/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        signal, // Support cancellation
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round(
@@ -84,10 +45,10 @@ function AxiosUpload() {
 
       return { success: true, data: response.data };
     } catch (error) {
-      if (axios.isCancel(error)) throw error;
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Upload failed' 
+      if (axios.isCancel(error)) throw error; // Handle cancellation
+      return {
+        success: false,
+        error: error.response?.data?.message || "Upload failed",
       };
     }
   };
@@ -96,20 +57,27 @@ function AxiosUpload() {
     <UploadButton
       uploadFunction={axiosUploadFunction}
       multiple={true}
-      acceptedFileTypes={['.jpg', '.png', '.pdf']}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
       maxFiles={5}
-      maxFileSize={10 * 1024 * 1024}
+      maxFileSize={10 * 1024 * 1024} // 10MB
+      onUpload={(files, results) => {
+        console.log("Successfully uploaded files:", files);
+        console.log("Upload results:", results);
+      }}
+      onUploadProgress={(progress) => {
+        console.log("Upload progress:", progress);
+      }}
     >
-      Upload Files
+      Select Files to Upload
     </UploadButton>
   );
 }
 ```
 
-### 3. Dialog Upload
+### Dialog Upload
 
 ```tsx
-import { DialogUploader } from 'react-progress-uploader';
+import { DialogUploader } from "react-progress-uploader";
 
 function DialogUpload() {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,50 +88,61 @@ function DialogUpload() {
       <DialogUploader
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        uploadFunction={uploadFunction}
+        uploadFunction={axiosUploadFunction}
         multiple={true}
         maxFiles={10}
+        acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+        maxFileSize={10 * 1024 * 1024}
+        onUpload={(files, results) => {
+          console.log("Dialog upload completed:", files);
+        }}
       />
     </>
   );
 }
 ```
 
-### 4. File Selection Only (No Upload)
+### Drag & Drop Upload
 
 ```tsx
-function FileSelector() {
-  const handleFileSelection = (files) => {
-    console.log('Selected files:', files);
-    // Handle file logic
-  };
+import { Uploader } from "react-progress-uploader";
 
+function DragDropUpload() {
   return (
-    <UploadButton
-      onUpload={handleFileSelection}
+    <Uploader
+      uploadFunction={axiosUploadFunction}
       multiple={true}
-      acceptedFileTypes={['.jpg', '.png']}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
       maxFiles={5}
-    >
-      Select Files
-    </UploadButton>
+      maxFileSize={10 * 1024 * 1024}
+      onUpload={(files, results) => {
+        console.log("Drag & drop upload completed:", files);
+      }}
+    />
   );
 }
 ```
 
 ## 📝 Core API
 
-### UploadButton Props
+### Main Components
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `uploadFunction` | `UploadFunction` | `undefined` | Upload function (optional) |
-| `multiple` | `boolean` | `true` | Multi-file support |
-| `acceptedFileTypes` | `string[]` | `undefined` | File type restrictions |
-| `maxFiles` | `number` | `10` | Maximum number of files |
-| `maxFileSize` | `number` | `undefined` | File size limit (bytes) |
-| `onUpload` | `UploadCallback` | `undefined` | Completion callback |
-| `onUploadProgress` | `ProgressCallback` | `undefined` | Progress callback |
+- `UploadButton` - Button-style upload component
+- `DialogUploader` - Dialog upload component
+- `Uploader` - Drag & drop area upload component
+
+### Common Props
+
+| Property            | Type               | Default      | Description                |
+| ------------------- | ------------------ | ------------ | -------------------------- |
+| `uploadFunction`    | `UploadFunction`   | **Required** | Axios upload function      |
+| `multiple`          | `boolean`          | `true`       | Multi-file support         |
+| `acceptedFileTypes` | `string[]`         | `undefined`  | File type restrictions     |
+| `maxFiles`          | `number`           | `10`         | Maximum number of files    |
+| `maxFileSize`       | `number`           | `undefined`  | File size limit (bytes)    |
+| `maxConcurrent`     | `number`           | `3`          | Maximum concurrent uploads |
+| `onUpload`          | `UploadCallback`   | `undefined`  | Completion callback        |
+| `onUploadProgress`  | `ProgressCallback` | `undefined`  | Progress callback          |
 
 ### Upload Function Type
 
@@ -182,17 +161,16 @@ type UploadFunction = (options: {
 ## 🎯 Recommended Configuration
 
 ```tsx
-// Recommended setup
 <UploadButton
-  uploadFunction={uploadFunction}
+  uploadFunction={axiosUploadFunction}
   multiple={true}
-  acceptedFileTypes={['.jpg', '.png', '.pdf']} // Explicit file types
-  maxFiles={5}                                  // Reasonable limit
-  maxFileSize={10 * 1024 * 1024}              // 10MB size limit
-  maxConcurrent={3}                            // Concurrent uploads
+  acceptedFileTypes={[".jpg", ".png", ".pdf"]} // Explicit file types
+  maxFiles={5} // Reasonable limit
+  maxFileSize={10 * 1024 * 1024} // 10MB size limit
+  maxConcurrent={3} // 3 concurrent uploads
 />
 ```
 
 ## 📄 License
 
-[MIT License](LICENSE) © 2024 
+[MIT License](LICENSE) © 2024
