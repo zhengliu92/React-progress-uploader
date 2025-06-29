@@ -1,28 +1,51 @@
 # React Progress Uploader
 
+<div align="center">
+
+[![Language](https://img.shields.io/badge/Language-中文-red?style=flat-square)](README.md)
+[![Language](https://img.shields.io/badge/Language-English-blue?style=flat-square)](README.en.md)
+
+**🌍 Languages:** [🇨🇳 简体中文](README.md) • [🇺🇸 English](README.en.md)
+
+</div>
+
 一个功能完整、类型安全的 React 文件上传组件库，支持拖拽上传、实时进度显示、文件类型限制、取消上传等特性。
+
+<div align="center">
 
 [![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+</div>
 
 ## 📚 在线演示
 
 **[查看实时演示和文档](https://zhengliu92.github.io/React-progress-uploader/)**
 
-## 🔧 最近更新 (v1.1.2)
+## 🔧 最近更新 (v1.1.3)
+
+### 🆕 新功能
+
+- 🎨 **自定义按钮颜色** - 支持 `backgroundColor`、`color`、`borderColor` 属性快速自定义按钮外观
+- 🎯 **可选按钮图标** - 新增 `showIcon` 和 `icon` 属性，支持隐藏图标或使用自定义图标
+- 🌈 **新增 custom 变体** - 提供更灵活的自定义样式支持
+- 📖 **双语文档支持** - 完整的中英文 README 和示例代码
 
 ### Bug 修复
 
 - ✅ **修复文件列表重复显示问题** - 在 DialogUploader 中，同一文件不再重复显示
 - ✅ **修复重复上传按钮问题** - 移除了 DialogUploader 中的重复"开始上传"按钮
+- ✅ **修复取消状态图标显示错误** - 取消状态现在正确显示水平线图标
+- ✅ **修复图标颜色继承问题** - 图标现在正确继承按钮颜色
 - ✅ **优化 Windows 兼容性** - 使用`rimraf`替代`rm`命令，确保在 Windows 系统上正常构建
-- ✅ **修复 npm 源配置问题** - 默认使用官方 npm 源，提升下载速度
 
 ### 技术改进
 
 - 🚀 **新增 hideActions 属性** - Uploader 组件支持隐藏按钮区域，提供更灵活的集成方式
 - 📦 **优化构建流程** - 改进 Windows 系统上的构建体验
 - 🔍 **更好的类型安全** - 优化 TypeScript 类型定义
+- 📚 **完善 Storybook 示例** - 新增图标选项和自定义颜色的完整演示
 
 ## 📦 安装
 

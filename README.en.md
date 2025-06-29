@@ -1,28 +1,51 @@
 # React Progress Uploader
 
+<div align="center">
+
+[![Language](https://img.shields.io/badge/Language-中文-red?style=flat-square)](README.md)
+[![Language](https://img.shields.io/badge/Language-English-blue?style=flat-square)](README.en.md)
+
+**🌍 Languages:** [🇨🇳 简体中文](README.md) • [🇺🇸 English](README.en.md)
+
+</div>
+
 A feature-complete, type-safe React file upload component library that supports drag-and-drop uploads, real-time progress tracking, file type restrictions, upload cancellation, and more.
+
+<div align="center">
 
 [![npm version](https://badge.fury.io/js/react-progress-uploader.svg)](https://badge.fury.io/js/react-progress-uploader)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
+</div>
 
 ## 📚 Live Demo
 
 **[View Live Demo & Documentation](https://zhengliu92.github.io/React-progress-uploader/)**
 
-## 🔧 Recent Updates (v1.1.2)
+## 🔧 Recent Updates (v1.1.3)
+
+### 🆕 New Features
+
+- 🎨 **Custom Button Colors** - Support `backgroundColor`, `color`, `borderColor` properties for quick button appearance customization
+- 🎯 **Optional Button Icons** - New `showIcon` and `icon` properties to hide icons or use custom icons
+- 🌈 **New Custom Variant** - Provides more flexible custom styling support
+- 📖 **Bilingual Documentation** - Complete Chinese and English README with examples
 
 ### Bug Fixes
 
 - ✅ **Fixed duplicate file list display** - Files no longer appear twice in DialogUploader
 - ✅ **Fixed duplicate upload buttons** - Removed duplicate "Start Upload" buttons in DialogUploader
+- ✅ **Fixed cancelled status icon display** - Cancelled status now correctly shows horizontal line icon
+- ✅ **Fixed icon color inheritance** - Icons now properly inherit button colors
 - ✅ **Improved Windows compatibility** - Use `rimraf` instead of `rm` command for better Windows support
-- ✅ **Fixed npm registry configuration** - Use official npm registry by default for better download speed
 
 ### Technical Improvements
 
 - 🚀 **Added hideActions property** - Uploader component supports hiding button area for more flexible integration
 - 📦 **Optimized build process** - Improved build experience on Windows systems
 - 🔍 **Better type safety** - Enhanced TypeScript type definitions
+- 📚 **Enhanced Storybook examples** - Added comprehensive demos for icon options and custom colors
 
 ## 📦 Installation
 
