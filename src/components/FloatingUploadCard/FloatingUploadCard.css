@@ -1,0 +1,530 @@
+/* 浮动上传卡片 */
+.floating-upload-card {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* 移除容器级别的过度动画，避免布局抖动 */
+}
+
+/* 主题变量 */
+.floating-upload-card--theme-light {
+  --fuc-bg-primary: #ffffff;
+  --fuc-bg-secondary: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --fuc-border-primary: #e2e8f0;
+  --fuc-border-secondary: #e5e7eb;
+  --fuc-text-primary: #1e293b;
+  --fuc-text-secondary: #64748b;
+  --fuc-text-tertiary: #6b7280;
+  --fuc-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 0, 0, 0.06);
+  --fuc-progress-bg: #e2e8f0;
+  --fuc-progress-fill: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  --fuc-file-bg: #fafafa;
+}
+
+.floating-upload-card--theme-dark {
+  --fuc-bg-primary: #1f2937;
+  --fuc-bg-secondary: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  --fuc-border-primary: #374151;
+  --fuc-border-secondary: #4b5563;
+  --fuc-text-primary: #f9fafb;
+  --fuc-text-secondary: #9ca3af;
+  --fuc-text-tertiary: #9ca3af;
+  --fuc-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2);
+  --fuc-progress-bg: #4b5563;
+  --fuc-progress-fill: linear-gradient(90deg, #60a5fa, #3b82f6);
+  --fuc-file-bg: #374151;
+}
+
+.floating-upload-card--theme-blue {
+  --fuc-bg-primary: #f0f9ff;
+  --fuc-bg-secondary: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  --fuc-border-primary: #bae6fd;
+  --fuc-border-secondary: #e0f2fe;
+  --fuc-text-primary: #0c4a6e;
+  --fuc-text-secondary: #0369a1;
+  --fuc-text-tertiary: #0891b2;
+  --fuc-shadow: 0 20px 60px rgba(14, 165, 233, 0.15), 0 8px 20px rgba(14, 165, 233, 0.1);
+  --fuc-progress-bg: #bae6fd;
+  --fuc-progress-fill: linear-gradient(90deg, #0ea5e9, #0284c7);
+  --fuc-file-bg: #f0f9ff;
+}
+
+.floating-upload-card--theme-green {
+  --fuc-bg-primary: #f0fdf4;
+  --fuc-bg-secondary: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  --fuc-border-primary: #bbf7d0;
+  --fuc-border-secondary: #dcfce7;
+  --fuc-text-primary: #14532d;
+  --fuc-text-secondary: #166534;
+  --fuc-text-tertiary: #059669;
+  --fuc-shadow: 0 20px 60px rgba(34, 197, 94, 0.15), 0 8px 20px rgba(34, 197, 94, 0.1);
+  --fuc-progress-bg: #bbf7d0;
+  --fuc-progress-fill: linear-gradient(90deg, #22c55e, #16a34a);
+  --fuc-file-bg: #f0fdf4;
+}
+
+.floating-upload-card--theme-purple {
+  --fuc-bg-primary: #faf5ff;
+  --fuc-bg-secondary: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  --fuc-border-primary: #e9d5ff;
+  --fuc-border-secondary: #f3e8ff;
+  --fuc-text-primary: #581c87;
+  --fuc-text-secondary: #7c3aed;
+  --fuc-text-tertiary: #8b5cf6;
+  --fuc-shadow: 0 20px 60px rgba(168, 85, 247, 0.15), 0 8px 20px rgba(168, 85, 247, 0.1);
+  --fuc-progress-bg: #e9d5ff;
+  --fuc-progress-fill: linear-gradient(90deg, #a855f7, #9333ea);
+  --fuc-file-bg: #faf5ff;
+}
+
+.floating-upload-card--theme-orange {
+  --fuc-bg-primary: #fffbeb;
+  --fuc-bg-secondary: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+  --fuc-bg-mini: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  --fuc-border-primary: #fde68a;
+  --fuc-border-secondary: #fef3c7;
+  --fuc-text-primary: #92400e;
+  --fuc-text-secondary: #b45309;
+  --fuc-text-tertiary: #d97706;
+  --fuc-shadow: 0 20px 60px rgba(245, 158, 11, 0.15), 0 8px 20px rgba(245, 158, 11, 0.1);
+  --fuc-progress-bg: #fde68a;
+  --fuc-progress-fill: linear-gradient(90deg, #f59e0b, #d97706);
+  --fuc-file-bg: #fffbeb;
+}
+
+/* 最小化状态 */
+.floating-upload-card--minimized {
+  width: 60px;
+  height: 60px;
+}
+
+.floating-upload-card__minimized {
+  width: 60px;
+  height: 60px;
+  background: var(--fuc-bg-mini);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-upload-card__minimized--hidden {
+  display: none;
+}
+
+.floating-upload-card__minimized--visible {
+  display: flex;
+}
+
+.floating-upload-card__content--hidden {
+  display: none;
+}
+
+.floating-upload-card__content--visible {
+  display: block;
+}
+
+.floating-upload-card__minimized:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.floating-upload-card__mini-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.floating-upload-card__mini-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.floating-upload-card__mini-stats {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.floating-upload-card__mini-progress {
+  width: 32px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.floating-upload-card__mini-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+/* 展开状态内容 */
+.floating-upload-card__content {
+  width: 380px;
+  max-height: 480px;
+  background: var(--fuc-bg-primary);
+  border-radius: 12px;
+  box-shadow: var(--fuc-shadow);
+  border: 1px solid var(--fuc-border-primary);
+  overflow: hidden;
+  /* 只对透明度和变换做动画，避免尺寸变化导致的抖动 */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 头部区域 */
+.floating-upload-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px 12px;
+  background: var(--fuc-bg-secondary);
+  border-bottom: 1px solid var(--fuc-border-primary);
+}
+
+.floating-upload-card__toggle {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--fuc-text-secondary);
+}
+
+.floating-upload-card__toggle:hover {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--fuc-text-primary);
+}
+
+.floating-upload-card__toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.floating-upload-card__toggle-icon--expanded {
+  transform: rotate(180deg);
+}
+
+.floating-upload-card__header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.floating-upload-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fuc-text-primary);
+  margin: 0;
+}
+
+.floating-upload-card__stats {
+  font-size: 12px;
+  color: var(--fuc-text-secondary);
+}
+
+.floating-upload-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.floating-upload-card__action-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--fuc-text-secondary);
+}
+
+.floating-upload-card__action-btn:hover {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--fuc-text-primary);
+}
+
+.floating-upload-card__close-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+/* 总体进度条 */
+.floating-upload-card__overall-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px 16px;
+  background: var(--fuc-bg-secondary);
+}
+
+.floating-upload-card__overall-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--fuc-progress-bg);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.floating-upload-card__overall-fill {
+  height: 100%;
+  background: var(--fuc-progress-fill);
+  border-radius: 3px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.floating-upload-card__overall-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progress-shine 2s infinite;
+}
+
+.floating-upload-card__overall-percent {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fuc-text-secondary);
+  min-width: 35px;
+  text-align: right;
+}
+
+/* 文件列表 */
+.floating-upload-card__files {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 0 4px 16px;
+}
+
+.floating-upload-card__file {
+  margin: 0 16px 12px;
+  padding: 12px;
+  background: var(--fuc-file-bg);
+  border: 1px solid var(--fuc-border-secondary);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.floating-upload-card__file--uploading {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.03);
+}
+
+.floating-upload-card__file--completed {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.floating-upload-card__file--error {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.floating-upload-card__file--cancelled {
+  border-color: #6b7280;
+  background: rgba(107, 114, 128, 0.03);
+  opacity: 0.7;
+}
+
+.floating-upload-card__file--pending {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.03);
+}
+
+.floating-upload-card__file-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.floating-upload-card__file-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fuc-text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.floating-upload-card__file-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.floating-upload-card__file-percent {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--fuc-text-secondary);
+  min-width: 30px;
+  text-align: right;
+}
+
+.floating-upload-card__file-progress {
+  height: 4px;
+  background: var(--fuc-border-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.floating-upload-card__file-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.floating-upload-card__file-progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: progress-shine 1.8s infinite;
+}
+
+.floating-upload-card__file-message {
+  font-size: 11px;
+  color: var(--fuc-text-tertiary);
+  line-height: 1.3;
+}
+
+/* 操作按钮区域 */
+.floating-upload-card__actions-bar {
+  margin: 12px 16px 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--fuc-border-secondary);
+  display: flex;
+  justify-content: center;
+}
+
+.floating-upload-card__cancel-all {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.floating-upload-card__cancel-all:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+/* 动画 */
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 滚动条样式 */
+.floating-upload-card__files::-webkit-scrollbar {
+  width: 6px;
+}
+
+.floating-upload-card__files::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.floating-upload-card__files::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.floating-upload-card__files::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .floating-upload-card {
+    bottom: 16px;
+    right: 16px;
+  }
+  
+  .floating-upload-card__content {
+    width: calc(100vw - 32px);
+    max-width: 350px;
+  }
+  
+  .floating-upload-card__file-name {
+    font-size: 12px;
+  }
+  
+  .floating-upload-card__header {
+    padding: 12px 16px 8px;
+  }
+  
+  .floating-upload-card__overall-progress {
+    padding: 0 16px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-upload-card__content {
+    max-height: 400px;
+  }
+  
+  .floating-upload-card__files {
+    max-height: 260px;
+  }
+}
+
+ 

@@ -23,10 +23,15 @@ A feature-complete, type-safe React file upload component library that supports 
 
 **[View Live Demo & Documentation](https://zhengliu92.github.io/React-progress-uploader/)**
 
-## 🔧 Recent Updates (v1.1.3)
+## 🔧 Recent Updates (v1.1.4)
 
 ### 🆕 New Features
 
+- 🎯 **Brand New SimpleUploadButton Component** - Lightweight one-click file selection with floating progress card
+  - ✨ **Instant Upload** - Start uploading immediately after file selection, no additional dialogs needed
+  - 🎨 **Floating Progress Card** - Elegant bottom-right floating progress display with minimize and expand options
+  - 🌈 **6 Theme Modes** - Choose from light, dark, blue, green, purple, orange themes
+  - 📱 **Responsive Design** - Adaptive display for both mobile and desktop
 - 🎨 **Custom Button Colors** - Support `backgroundColor`, `color`, `borderColor` properties for quick button appearance customization
 - 🎯 **Optional Button Icons** - New `showIcon` and `icon` properties to hide icons or use custom icons
 - 🌈 **New Custom Variant** - Provides more flexible custom styling support
@@ -34,6 +39,7 @@ A feature-complete, type-safe React file upload component library that supports 
 
 ### Bug Fixes
 
+- ✅ **Fixed FloatingUploadCard theme consistency** - Default light theme now uses unified blue color scheme
 - ✅ **Fixed duplicate file list display** - Files no longer appear twice in DialogUploader
 - ✅ **Fixed duplicate upload buttons** - Removed duplicate "Start Upload" buttons in DialogUploader
 - ✅ **Fixed cancelled status icon display** - Cancelled status now correctly shows horizontal line icon
@@ -136,6 +142,34 @@ function DialogUpload() {
         }}
       />
     </>
+  );
+}
+```
+
+### Simple Button Upload (Recommended)
+
+```tsx
+import { SimpleUploadButton } from "react-progress-uploader";
+
+function SimpleUpload() {
+  return (
+    <SimpleUploadButton
+      uploadFunction={axiosUploadFunction}
+      multiple={true}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+      maxFiles={5}
+      maxFileSize={10 * 1024 * 1024}
+      showFloatingCard={true}
+      floatingCardTheme="light"
+      onUpload={(files, results) => {
+        console.log("Simple upload completed:", files);
+      }}
+      onUploadProgress={(progress) => {
+        console.log("Upload progress:", progress);
+      }}
+    >
+      Select Files
+    </SimpleUploadButton>
   );
 }
 ```
@@ -328,10 +362,83 @@ function CustomControlUpload() {
 }
 ```
 
+### Floating Card Theme Examples
+
+```tsx
+import { SimpleUploadButton } from "react-progress-uploader";
+
+function ThemeExamples() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* Light Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="light"
+        backgroundColor="#3b82f6"
+        color="white"
+      >
+        Light Theme
+      </SimpleUploadButton>
+
+      {/* Dark Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="dark"
+        backgroundColor="#1f2937"
+        color="white"
+      >
+        Dark Theme
+      </SimpleUploadButton>
+
+      {/* Blue Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="blue"
+        backgroundColor="#0ea5e9"
+        color="white"
+      >
+        Blue Theme
+      </SimpleUploadButton>
+
+      {/* Green Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="green"
+        backgroundColor="#10b981"
+        color="white"
+      >
+        Green Theme
+      </SimpleUploadButton>
+
+      {/* Purple Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="purple"
+        backgroundColor="#8b5cf6"
+        color="white"
+      >
+        Purple Theme
+      </SimpleUploadButton>
+
+      {/* Orange Theme */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="orange"
+        backgroundColor="#f59e0b"
+        color="white"
+      >
+        Orange Theme
+      </SimpleUploadButton>
+    </div>
+  );
+}
+```
+
 ## 📝 Core API
 
 ### Main Components
 
+- `SimpleUploadButton` - Simple button upload component (Recommended)
 - `UploadButton` - Button-style upload component
 - `DialogUploader` - Dialog upload component
 - `Uploader` - Drag & drop area upload component
@@ -348,6 +455,20 @@ function CustomControlUpload() {
 | `maxConcurrent`     | `number`           | `3`          | Maximum concurrent uploads |
 | `onUpload`          | `UploadCallback`   | `undefined`  | Completion callback        |
 | `onUploadProgress`  | `ProgressCallback` | `undefined`  | Progress callback          |
+
+### SimpleUploadButton Specific Props
+
+| Property              | Type                                                              | Default   | Description                      |
+| --------------------- | ----------------------------------------------------------------- | --------- | -------------------------------- |
+| `showFloatingCard`    | `boolean`                                                         | `true`    | Whether to show floating card    |
+| `floatingCardTheme`   | `"light" \| "dark" \| "blue" \| "green" \| "purple" \| "orange"` | `"light"` | Floating card theme              |
+| `variant`             | `"primary" \| "secondary" \| "outline" \| "custom"`              | `primary` | Button variant                   |
+| `size`                | `"small" \| "medium" \| "large"`                                  | `medium`  | Button size                      |
+| `backgroundColor`     | `string`                                                          | -         | Custom background color          |
+| `color`               | `string`                                                          | -         | Custom text color                |
+| `borderColor`         | `string`                                                          | -         | Custom border color              |
+| `showIcon`            | `boolean`                                                         | `true`    | Whether to show icon             |
+| `icon`                | `React.ReactNode`                                                 | -         | Custom icon                      |
 
 ### UploadButton Component Specific Props
 

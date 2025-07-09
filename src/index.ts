@@ -2,6 +2,10 @@ export { Uploader } from "./components/Uploader/Uploader";
 export { DialogUploader } from "./components/DialogUploader/DialogUploader";
 export { UploadButton } from "./components/UploadButton/UploadButton";
 
+// 新增组件
+export { SimpleUploadButton } from "./components/SimpleUploadButton";
+export { FloatingUploadCard } from "./components/FloatingUploadCard";
+
 // 共享组件
 export { StatusIcon, FileList } from "./components/shared";
 export { UploadProgress as UploadProgressComponent } from "./components/shared";

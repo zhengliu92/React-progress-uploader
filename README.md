@@ -23,10 +23,15 @@
 
 **[查看实时演示和文档](https://zhengliu92.github.io/React-progress-uploader/)**
 
-## 🔧 最近更新 (v1.1.3)
+## 🔧 最近更新 (v1.1.4)
 
 ### 🆕 新功能
 
+- 🎯 **全新 SimpleUploadButton 组件** - 轻量级的单击选择文件上传按钮，支持浮动进度卡片
+  - ✨ **即时上传** - 选择文件后立即开始上传，无需额外对话框
+  - 🎨 **浮动进度卡片** - 优雅的右下角悬浮进度显示，支持最小化和展开
+  - 🌈 **6种主题模式** - light、dark、blue、green、purple、orange 主题任选
+  - 📱 **响应式设计** - 自适应移动端和桌面端显示
 - 🎨 **自定义按钮颜色** - 支持 `backgroundColor`、`color`、`borderColor` 属性快速自定义按钮外观
 - 🎯 **可选按钮图标** - 新增 `showIcon` 和 `icon` 属性，支持隐藏图标或使用自定义图标
 - 🌈 **新增 custom 变体** - 提供更灵活的自定义样式支持
@@ -34,6 +39,7 @@
 
 ### Bug 修复
 
+- ✅ **修复 FloatingUploadCard 主题一致性** - 默认 light 主题现在使用统一的蓝色系配色方案
 - ✅ **修复文件列表重复显示问题** - 在 DialogUploader 中，同一文件不再重复显示
 - ✅ **修复重复上传按钮问题** - 移除了 DialogUploader 中的重复"开始上传"按钮
 - ✅ **修复取消状态图标显示错误** - 取消状态现在正确显示水平线图标
@@ -136,6 +142,34 @@ function DialogUpload() {
         }}
       />
     </>
+  );
+}
+```
+
+### 简单按钮上传（推荐）
+
+```tsx
+import { SimpleUploadButton } from "react-progress-uploader";
+
+function SimpleUpload() {
+  return (
+    <SimpleUploadButton
+      uploadFunction={axiosUploadFunction}
+      multiple={true}
+      acceptedFileTypes={[".jpg", ".png", ".pdf"]}
+      maxFiles={5}
+      maxFileSize={10 * 1024 * 1024}
+      showFloatingCard={true}
+      floatingCardTheme="light"
+      onUpload={(files, results) => {
+        console.log("简单上传完成:", files);
+      }}
+      onUploadProgress={(progress) => {
+        console.log("上传进度:", progress);
+      }}
+    >
+      选择文件
+    </SimpleUploadButton>
   );
 }
 ```
@@ -328,10 +362,83 @@ function CustomControlUpload() {
 }
 ```
 
+### 浮动卡片主题示例
+
+```tsx
+import { SimpleUploadButton } from "react-progress-uploader";
+
+function ThemeExamples() {
+  return (
+    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+      {/* Light 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="light"
+        backgroundColor="#3b82f6"
+        color="white"
+      >
+        Light 主题
+      </SimpleUploadButton>
+
+      {/* Dark 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="dark"
+        backgroundColor="#1f2937"
+        color="white"
+      >
+        Dark 主题
+      </SimpleUploadButton>
+
+      {/* Blue 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="blue"
+        backgroundColor="#0ea5e9"
+        color="white"
+      >
+        Blue 主题
+      </SimpleUploadButton>
+
+      {/* Green 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="green"
+        backgroundColor="#10b981"
+        color="white"
+      >
+        Green 主题
+      </SimpleUploadButton>
+
+      {/* Purple 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="purple"
+        backgroundColor="#8b5cf6"
+        color="white"
+      >
+        Purple 主题
+      </SimpleUploadButton>
+
+      {/* Orange 主题 */}
+      <SimpleUploadButton
+        uploadFunction={axiosUploadFunction}
+        floatingCardTheme="orange"
+        backgroundColor="#f59e0b"
+        color="white"
+      >
+        Orange 主题
+      </SimpleUploadButton>
+    </div>
+  );
+}
+```
+
 ## 📝 核心 API
 
 ### 主要组件
 
+- `SimpleUploadButton` - 简单按钮上传组件（推荐）
 - `UploadButton` - 按钮式上传组件
 - `DialogUploader` - 对话框上传组件
 - `Uploader` - 拖拽区域上传组件
@@ -348,6 +455,20 @@ function CustomControlUpload() {
 | `maxConcurrent`     | `number`           | `3`         | 最大并发上传数     |
 | `onUpload`          | `UploadCallback`   | `undefined` | 完成回调           |
 | `onUploadProgress`  | `ProgressCallback` | `undefined` | 进度回调           |
+
+### SimpleUploadButton 特有属性
+
+| 属性                  | 类型                                                              | 默认值    | 描述                             |
+| --------------------- | ----------------------------------------------------------------- | --------- | -------------------------------- |
+| `showFloatingCard`    | `boolean`                                                         | `true`    | 是否显示浮动进度卡片             |
+| `floatingCardTheme`   | `"light" \| "dark" \| "blue" \| "green" \| "purple" \| "orange"` | `"light"` | 浮动卡片主题                     |
+| `variant`             | `"primary" \| "secondary" \| "outline" \| "custom"`              | `primary` | 按钮变体                         |
+| `size`                | `"small" \| "medium" \| "large"`                                  | `medium`  | 按钮尺寸                         |
+| `backgroundColor`     | `string`                                                          | -         | 自定义背景色                     |
+| `color`               | `string`                                                          | -         | 自定义文字色                     |
+| `borderColor`         | `string`                                                          | -         | 自定义边框色                     |
+| `showIcon`            | `boolean`                                                         | `true`    | 是否显示图标                     |
+| `icon`                | `React.ReactNode`                                                 | -         | 自定义图标                       |
 
 ### UploadButton 组件特有 Props
 

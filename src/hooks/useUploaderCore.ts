@@ -61,6 +61,7 @@ export const useUploaderCore = ({
     removeFile: fileSelection.removeFile,
     clearFiles: fileSelection.clearFiles,
     canAddMoreFiles: fileSelection.canAddMoreFiles,
+    validateFile: fileSelection.validateFile,
     fileStats,
 
     // 上传队列相关
