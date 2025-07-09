@@ -70,3 +70,35 @@
   --info-bg: #f0f9ff;
   --neutral-bg: #f9fafb;
 }
+
+/* 移动端适配 */
+@media (max-width: 640px) {
+  .status-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* 超小屏适配 */
+@media (max-width: 360px) {
+  .status-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* 平板适配 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .status-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* 横屏模式适配 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .status-icon {
+    width: 18px;
+    height: 18px;
+  }
+}

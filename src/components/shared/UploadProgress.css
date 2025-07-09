@@ -48,17 +48,25 @@
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 12px;
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .upload-progress__cancel-all-btn:hover {
   background-color: #fee2e2;
   border-color: #fecaca;
   color: #dc2626;
+}
+
+.upload-progress__cancel-all-btn:active {
+  background-color: #fecaca;
+  border-color: #f87171;
+  color: #b91c1c;
+  transform: scale(0.98);
 }
 
 .upload-progress__list {
@@ -255,5 +263,104 @@
 
   .upload-progress__item {
     padding: 12px 8px;
+  }
+
+  .upload-progress__title {
+    font-size: 18px;
+  }
+
+  .upload-progress__stats {
+    font-size: 16px;
+  }
+
+  .upload-progress__percentage {
+    font-size: 16px;
+  }
+
+  .upload-progress__name {
+    font-size: 16px;
+  }
+
+  .upload-progress__status {
+    font-size: 16px;
+  }
+
+  .upload-progress__percent {
+    font-size: 16px;
+  }
+
+  .upload-progress__cancel-all-btn {
+    font-size: 16px;
+  }
+}
+
+/* 大屏手机适配 */
+@media (min-width: 640px) and (max-width: 768px) {
+  .upload-progress__header {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .upload-progress__summary {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .upload-progress__name-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+/* 超小屏进度显示优化 */
+@media (max-width: 360px) {
+  .upload-progress {
+    padding: 12px;
+  }
+
+  .upload-progress__header {
+    margin-bottom: 12px;
+  }
+
+  .upload-progress__title {
+    font-size: 16px;
+  }
+
+  .upload-progress__item {
+    padding: 8px 6px;
+  }
+
+  .upload-progress__name {
+    font-size: 14px;
+  }
+
+  .upload-progress__status {
+    font-size: 14px;
+  }
+
+  .upload-progress__percent {
+    font-size: 14px;
+  }
+
+  .upload-progress__bar {
+    height: 8px;
+  }
+
+  .upload-progress__overall-bar {
+    height: 10px;
+  }
+
+  /* 移动端专用pressed效果 */
+  .upload-progress__cancel-all-btn:active {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s ease;
+  }
+
+  /* 移动端禁用hover效果 */
+  .upload-progress__cancel-all-btn:hover {
+    transform: none;
+    box-shadow: none;
   }
 }

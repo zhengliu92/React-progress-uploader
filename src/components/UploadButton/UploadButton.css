@@ -115,6 +115,11 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.upload-button--custom:active:not(:disabled):not(.upload-button--disabled) {
+  transform: translateY(0) scale(0.98);
+  filter: brightness(0.9);
+}
+
 .upload-button--primary:hover:not(:disabled):not(.upload-button--disabled) {
   background-color: #2563eb;
   transform: translateY(-1px);
@@ -123,7 +128,7 @@
 
 .upload-button--primary:active:not(:disabled):not(.upload-button--disabled) {
   background-color: #1d4ed8;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .upload-button--secondary {
@@ -139,7 +144,7 @@
 
 .upload-button--secondary:active:not(:disabled):not(.upload-button--disabled) {
   background-color: #374151;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .upload-button--outline {
@@ -158,7 +163,7 @@
 .upload-button--outline:active:not(:disabled):not(.upload-button--disabled) {
   background-color: #2563eb;
   border-color: #2563eb;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 /* 禁用状态的特殊样式 */
@@ -179,6 +184,21 @@
   border-color: #d1d5db;
   color: #9ca3af;
   background-color: transparent;
+}
+
+/* 移动端专用pressed效果 */
+@media (max-width: 640px) {
+  .upload-button:active:not(:disabled):not(.upload-button--disabled) {
+    transform: scale(0.96) !important;
+    transition: transform 0.1s ease;
+  }
+
+  /* 移动端禁用hover效果，专注于active效果 */
+  .upload-button:hover:not(:disabled):not(.upload-button--disabled) {
+    transform: none;
+    box-shadow: none;
+    filter: none;
+  }
 }
 
 /* 响应式设计 */

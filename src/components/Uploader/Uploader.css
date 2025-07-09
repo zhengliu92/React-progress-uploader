@@ -204,17 +204,24 @@
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 12px;
   color: #6b7280;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .uploader-clear-btn:hover {
   background-color: #f3f4f6;
   border-color: #9ca3af;
   color: #374151;
+}
+
+.uploader-clear-btn:active {
+  background-color: #e5e7eb;
+  border-color: #6b7280;
+  transform: scale(0.98);
 }
 
 .uploader-selected-files ul {
@@ -263,7 +270,7 @@
 .uploader-remove-file {
   background: none;
   border: none;
-  padding: 4px;
+  padding: 8px;
   cursor: pointer;
   border-radius: 4px;
   color: #6b7280;
@@ -271,11 +278,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .uploader-remove-file:hover {
   background-color: #fee2e2;
   color: #dc2626;
+}
+
+.uploader-remove-file:active {
+  background-color: #fecaca;
+  color: #b91c1c;
+  transform: scale(0.95);
 }
 
 /* 上传进度 */
@@ -328,16 +343,23 @@
   background: none;
   border: 1px solid #ef4444;
   border-radius: 6px;
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 12px;
   color: #ef4444;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .uploader-cancel-all-btn:hover {
   background-color: #ef4444;
   color: white;
+}
+
+.uploader-cancel-all-btn:active {
+  background-color: #dc2626;
+  border-color: #b91c1c;
+  transform: scale(0.98);
 }
 
 .uploader-progress-list {
@@ -588,6 +610,12 @@
   border-color: #9ca3af;
 }
 
+.uploader-button--secondary:active:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #6b7280;
+  transform: scale(0.98);
+}
+
 .uploader-button--secondary:disabled {
   background-color: #f3f4f6;
   color: #9ca3af;
@@ -601,6 +629,11 @@
 
 .uploader-button--primary:hover {
   background-color: #2563eb;
+}
+
+.uploader-button--primary:active:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: scale(0.98);
 }
 
 .uploader-button--primary:disabled {
@@ -619,6 +652,12 @@
   border-color: #b91c1c;
 }
 
+.uploader-button--cancel:active:not(:disabled) {
+  background-color: #b91c1c;
+  border-color: #991b1b;
+  transform: scale(0.98);
+}
+
 /* 响应式设计 */
 @media (max-width: 640px) {
   .uploader-dropzone {
@@ -632,11 +671,11 @@
   }
 
   .uploader-text {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .uploader-subtext {
-    font-size: 13px;
+    font-size: 16px;
   }
 
   .uploader-progress-header,
@@ -650,6 +689,7 @@
 
   .uploader-progress-summary {
     justify-content: space-between;
+    font-size: 16px;
   }
 
   .uploader-progress-name-row {
@@ -675,5 +715,167 @@
 
   .uploader-button {
     justify-content: center;
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+
+  .uploader-file-name {
+    font-size: 16px;
+  }
+
+  .uploader-progress-name {
+    font-size: 16px;
+  }
+
+  .uploader-progress-status {
+    font-size: 16px;
+  }
+
+  .uploader-progress-percent {
+    font-size: 16px;
+  }
+
+  .uploader-cancel-all-btn {
+    font-size: 16px;
+  }
+
+  .uploader-progress-stats {
+    font-size: 16px;
+  }
+
+  .uploader-progress-percentage {
+    font-size: 16px;
+  }
+
+  /* 移动端专用pressed效果 */
+  .uploader-clear-btn:active,
+  .uploader-remove-file:active,
+  .uploader-cancel-all-btn:active,
+  .uploader-button:active:not(:disabled) {
+    transform: scale(0.95) !important;
+    transition: transform 0.1s ease;
+  }
+
+  /* 移动端禁用hover效果 */
+  .uploader-clear-btn:hover,
+  .uploader-remove-file:hover,
+  .uploader-cancel-all-btn:hover,
+  .uploader-button:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* 横屏模式适配 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .uploader-dropzone {
+    padding: 16px;
+    min-height: 120px;
+  }
+
+  .uploader-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .uploader-text {
+    font-size: 16px;
+  }
+
+  .uploader-subtext {
+    font-size: 14px;
+  }
+
+  .uploader-progress-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .uploader-progress-item {
+    padding: 6px;
+  }
+
+  .uploader-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+/* 大屏手机适配 */
+@media (min-width: 640px) and (max-width: 768px) {
+  .uploader-dropzone {
+    padding: 28px 20px;
+    min-height: 180px;
+  }
+
+  .uploader-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .uploader-text {
+    font-size: 19px;
+  }
+
+  .uploader-subtext {
+    font-size: 15px;
+  }
+
+  .uploader-progress-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+/* 平板适配 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .uploader-dropzone {
+    padding: 36px 24px;
+    min-height: 220px;
+  }
+
+  .uploader-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .uploader-text {
+    font-size: 20px;
+  }
+
+  .uploader-subtext {
+    font-size: 16px;
+  }
+}
+
+/* 超小屏适配 */
+@media (max-width: 360px) {
+  .uploader-dropzone {
+    padding: 20px 12px;
+    min-height: 140px;
+  }
+
+  .uploader-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .uploader-text {
+    font-size: 16px;
+  }
+
+  .uploader-subtext {
+    font-size: 14px;
+  }
+
+  .uploader-button {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  .uploader-progress-item {
+    padding: 6px;
   }
 }

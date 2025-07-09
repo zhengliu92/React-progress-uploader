@@ -72,7 +72,7 @@
 
 .simple-upload-button--primary:active:not(:disabled):not(.simple-upload-button--disabled) {
   background-color: #1d4ed8;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .simple-upload-button--secondary {
@@ -88,7 +88,7 @@
 
 .simple-upload-button--secondary:active:not(:disabled):not(.simple-upload-button--disabled) {
   background-color: #374151;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .simple-upload-button--outline {
@@ -107,7 +107,7 @@
 .simple-upload-button--outline:active:not(:disabled):not(.simple-upload-button--disabled) {
   background-color: #2563eb;
   border-color: #2563eb;
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .simple-upload-button--custom {
@@ -120,6 +120,11 @@
   transform: translateY(-1px);
   filter: brightness(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.simple-upload-button--custom:active:not(:disabled):not(.simple-upload-button--disabled) {
+  transform: translateY(0) scale(0.98);
+  filter: brightness(0.9);
 }
 
 /* 图标样式 */
@@ -182,6 +187,21 @@
 }
 
 
+
+/* 移动端专用pressed效果 */
+@media (max-width: 640px) {
+  .simple-upload-button:active:not(:disabled):not(.simple-upload-button--disabled) {
+    transform: scale(0.96) !important;
+    transition: transform 0.1s ease;
+  }
+
+  /* 移动端禁用hover效果，专注于active效果 */
+  .simple-upload-button:hover:not(:disabled):not(.simple-upload-button--disabled) {
+    transform: none;
+    box-shadow: none;
+    filter: none;
+  }
+}
 
 /* 响应式设计 */
 @media (max-width: 640px) {
