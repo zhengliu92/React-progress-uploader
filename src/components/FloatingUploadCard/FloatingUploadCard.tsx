@@ -128,7 +128,7 @@ export const FloatingUploadCard: React.FC<FloatingUploadCardProps> = ({
                 viewBox="0 0 24 24" 
                 fill="none" 
                 stroke="currentColor" 
-                className={`floating-upload-card__toggle-icon ${isExpanded ? 'floating-upload-card__toggle-icon--expanded' : ''}`}
+                className={`floating-upload-card__toggle-icon ${!isExpanded ? 'floating-upload-card__toggle-icon--expanded' : ''}`}
               >
                 <polyline points="6,9 12,15 18,9"></polyline>
               </svg>
