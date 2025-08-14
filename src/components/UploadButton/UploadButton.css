@@ -1,3 +1,8 @@
+button {
+  cursor: pointer; /* 恢复手型 */
+  user-select: none; /* 禁止选中文本 */
+}
+
 /* 基础按钮样式 */
 .upload-button {
   display: inline-flex;

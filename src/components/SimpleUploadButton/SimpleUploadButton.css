@@ -1,4 +1,8 @@
-/* 简单上传按钮 */
+button {
+  cursor: pointer; /* 恢复手型 */
+  user-select: none; /* 禁止选中文本 */
+}
+
 .simple-upload-button {
   display: inline-flex;
   align-items: center;
@@ -64,13 +68,17 @@
   color: white;
 }
 
-.simple-upload-button--primary:hover:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--primary:hover:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.simple-upload-button--primary:active:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--primary:active:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #1d4ed8;
   transform: translateY(0) scale(0.98);
 }
@@ -80,13 +88,17 @@
   color: white;
 }
 
-.simple-upload-button--secondary:hover:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--secondary:hover:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #4b5563;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
 }
 
-.simple-upload-button--secondary:active:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--secondary:active:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #374151;
   transform: translateY(0) scale(0.98);
 }
@@ -97,14 +109,18 @@
   border: 1px solid #3b82f6;
 }
 
-.simple-upload-button--outline:hover:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--outline:hover:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #3b82f6;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.simple-upload-button--outline:active:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--outline:active:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   background-color: #2563eb;
   border-color: #2563eb;
   transform: translateY(0) scale(0.98);
@@ -116,13 +132,17 @@
   transition: all 0.2s ease;
 }
 
-.simple-upload-button--custom:hover:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--custom:hover:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   transform: translateY(-1px);
   filter: brightness(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.simple-upload-button--custom:active:not(:disabled):not(.simple-upload-button--disabled) {
+.simple-upload-button--custom:active:not(:disabled):not(
+    .simple-upload-button--disabled
+  ) {
   transform: translateY(0) scale(0.98);
   filter: brightness(0.9);
 }
@@ -186,17 +206,19 @@
   background-color: transparent;
 }
 
-
-
 /* 移动端专用pressed效果 */
 @media (max-width: 640px) {
-  .simple-upload-button:active:not(:disabled):not(.simple-upload-button--disabled) {
+  .simple-upload-button:active:not(:disabled):not(
+      .simple-upload-button--disabled
+    ) {
     transform: scale(0.96) !important;
     transition: transform 0.1s ease;
   }
 
   /* 移动端禁用hover效果，专注于active效果 */
-  .simple-upload-button:hover:not(:disabled):not(.simple-upload-button--disabled) {
+  .simple-upload-button:hover:not(:disabled):not(
+      .simple-upload-button--disabled
+    ) {
     transform: none;
     box-shadow: none;
     filter: none;
@@ -214,5 +236,3 @@
     padding: 14px 20px;
   }
 }
-
- 
